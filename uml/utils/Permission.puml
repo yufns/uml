@@ -1,0 +1,19 @@
+@startuml
+
+class PermissionBuilder{
+  + void request()
+}
+
+class AlertDialog
+
+class PermissionManager{
+  {static} + static void requestPermissions(final PermissionBuilder builder)
+  {static} + void callWithPermissions(Object object, String[] perms, int requestCode)
+}
+
+PermissionManager *-- PermissionBuilder
+PermissionManager o-- AlertDialog
+
+
+
+@enduml

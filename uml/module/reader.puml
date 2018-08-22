@@ -1,0 +1,40 @@
+@startuml
+abstract class BaseReaderView{
+  {abstract} void onPageEndChanged(int currentPage)
+  {abstract} void onPageStartChange(int requestPage)
+  {abstract} void onPageRequest(int currentPage, int requestPage)
+}
+abstract class PageAnimController
+class PageSnapshot
+class PageSnapshotCache
+interface PageAnimController.PageCarver{
+  void drawPage(Canvas canvas, int index);
+  Integer requestPrePage();
+  Integer requestNextPage();
+  void requestInvalidate();
+  int getCurrentPageIndex();
+  int getContentWidth();
+  int getContentHeight();
+  int getScreenWidth();
+  int getScreenHeight();
+  int getPageBackgroundColor();
+  void onStartAnim(boolean isCancel);
+  void onStopAnim(boolean isCancel);
+}
+
+
+class BookReaderView
+class BookSettingParams
+class BookPageElement
+class BookTextSelectorElement
+
+BaseReaderView <|-- BookReaderView
+BookReaderView *-- BookSettingParams
+BookReaderView *-- BookPageElement
+BookReaderView *-- BookTextSelectorElement
+BaseReaderView *-- PageAnimController
+BaseReaderView *-- PageSnapshotCache
+PageSnapshotCache o-- PageSnapshot
+PageAnimController.PageCarver <|.. BaseReaderView
+
+@enduml
