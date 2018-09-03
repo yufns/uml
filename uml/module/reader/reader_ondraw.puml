@@ -1,0 +1,40 @@
+@startuml
+autonumber
+BaseReaderView -> BaseReaderView: onDraw
+BaseReaderView --> BaseReaderView: drawPage
+
+BaseReaderView --> BookPageElement: drawPageContent
+
+alt header绘制
+BookPageElement --> BookHeaderElement : draw
+else 绘制章节第一页Title
+BookHeaderElement --> BookHeaderElement : drawFirstPage
+else 绘制其他页面title
+BookHeaderElement --> BookHeaderElement : draw
+end
+
+BookPageElement --> BookFooterElement : draw
+BookFooterElement --> BookFooterElement : draw
+
+alt
+else 绘制文本
+BookPageElement --> BookLineElement : draw
+BookLineElement --> BookLineElement : drawWithDigests->draw
+
+else 绘制图片
+BookPageElement --> BookImageElement : draw
+BookImageElement --> BookImageElement : syncDrawWithinBitmap->draw
+end
+
+
+
+BaseReaderView --> BookTextSelectorElement : drawPageContent
+BookTextSelectorElement --> BookTextSelectorElement : drawLeftCursor
+BookTextSelectorElement --> BookTextSelectorElement : drawRightCursor
+BookTextSelectorElement --> BookTextSelectorElement : drawMagnifier
+
+BaseReaderView --> BaseReaderView: drawCover
+
+
+
+@enduml

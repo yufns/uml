@@ -16,7 +16,8 @@ class PageTurningAnimController
 class HorTranslationAnimController
 
 interface PageAnimController.PageCarver{
-  void drawPage(Canvas canvas, int index);
+
+  void drawPage(Canvas canvas, int index)//区分第一页和其他页
   Integer requestPrePage();
   Integer requestNextPage();
   void requestInvalidate();
