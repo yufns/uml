@@ -1,0 +1,42 @@
+@startuml
+
+interface OnBookViewListener{
+  void onSelectorVisible(boolean visible)//是否处于文字选择状态
+  void onNotePopOpen(int type)//是否打开了笔记编辑框
+  void onBookViewCenterClick()//是否点击了阅读器中心区域
+  void onBookPageChanged()//翻页
+}
+
+interface OnChapterChangeListener{
+  void onNextChapter(boolean isChapterTurn, int chapterIndex, boolean isEndIndex)
+  void onPreChapter(boolean isChapterTurn, int chapterIndex, boolean isStartIndex)
+}
+interface  Presenter{
+  void getBookDetail(long bookId)
+  void getChapterContent(Book book, long chapterId, int chapterIndex, int position)//从网络获取文章信息
+}
+
+interface View{
+  void onChapterContent(List<BookPageData> bookPageDataList, int chapterIndex, int position);//显示章节内容
+}
+
+
+class BookReaderActivity
+class CatalogFragment
+class BookReaderMenuPopWindow
+class ReaderStatisticsHelper
+
+
+BookReaderActivity *-- BookReaderView
+BookReaderActivity *-- CatalogFragment
+BookReaderActivity *-- BookReaderMenuPopWindow
+BookReaderActivity *-- ReaderStatisticsHelper
+BookReaderActivity *-- Presenter
+
+
+View <|.. BookReaderActivity
+OnBookViewListener <|.. BookReaderActivity
+OnChapterChangeListener <|.. BookReaderActivity
+
+
+@enduml

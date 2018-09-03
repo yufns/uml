@@ -1,0 +1,40 @@
+@startuml
+abstract class ResElement{
+  -- abstract --
+  + {abstract} void update(ReaderSettingParams params);
+  + {abstract} int getHeight();
+  + {abstract} void draw(Canvas canvas);
+  + {abstract} void destroy();
+  -- protected --
+  # int getTextHeight(Paint paint)
+  # int getTextBaseLine(Paint paint)
+}
+
+class BookTextSelectorElement
+
+class BookPageElement{
+  - List<BookPageData> pages//需要绘制的数据
+  -- public --
+  + List<BookPageData> splitChapterData(BookChapterData chapterData)
+}
+class BookHeaderElement
+class BookFooterElement
+class BookLineElement
+class BookImageElement{
+  - LruCache<String, Bitmap> bitmapLruCache//绘制缓存区域
+}
+
+ResElement <|-- BookPageElement
+ResElement <|-- BookHeaderElement
+ResElement <|-- BookFooterElement
+ResElement <|-- BookLineElement
+ResElement <|-- BookImageElement
+ResElement <|-- BookTextSelectorElement
+
+BookPageElement *-- BookHeaderElement
+BookPageElement *-- BookFooterElement
+BookPageElement *-- BookLineElement
+BookPageElement *-- BookReaderView
+BookPageElement *-- BookImageElement
+
+@enduml

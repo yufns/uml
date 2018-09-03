@@ -1,0 +1,39 @@
+@startuml
+abstract class PageAnimController{
+  -- abstract --
+  {abstract} void dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)
+  {abstract} boolean dispatchDrawPage(Canvas canvas, PageCarver pageCarver)
+  {abstract} void startAnim(int fromIndex, int toIndex, boolean isNext, PageCarver pageCarver)//翻页动画开始
+  {abstract} void stopAnim(PageCarver pageCarver)
+}
+
+abstract class AbsHorGestureAnimController{
+  - Scroller mScroller
+}
+class AutoAnimController
+class NoAnimController
+class PageTurningAnimController
+class HorTranslationAnimController
+
+interface PageAnimController.PageCarver{
+  void drawPage(Canvas canvas, int index);
+  Integer requestPrePage();
+  Integer requestNextPage();
+  void requestInvalidate();
+  int getCurrentPageIndex();
+  int getContentWidth();
+  int getContentHeight();
+  int getScreenWidth();
+  int getScreenHeight();
+  int getPageBackgroundColor();
+  void onStartAnim(boolean isCancel);
+  void onStopAnim(boolean isCancel);
+}
+
+PageAnimController <|-- AbsHorGestureAnimController
+PageAnimController <|-- NoAnimController
+PageAnimController <|-- AutoAnimController
+AbsHorGestureAnimController <|-- PageTurningAnimController
+AbsHorGestureAnimController <|-- HorTranslationAnimController
+
+@enduml

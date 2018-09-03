@@ -1,0 +1,28 @@
+@startuml
+class PageSnapshot
+class PageSnapshotCache
+class BookReaderView{
+  - void initBookView()
+}
+class BookSettingParams
+abstract class BaseReaderView{
+  -- Override --
+  # void onDraw(Canvss canvas)
+  + boolean onTouchEvent(MotionEvent event)
+  -- abstract --
+  {abstract} void drawPageContent(Canvas canvas, int pageIndex)
+  {abstract} void onPageEndChanged(int currentPage)
+  {abstract} void onPageStartChange(int requestPage)
+  {abstract} void onPageRequest(int currentPage, int requestPage)
+}
+
+BaseReaderView <|-- BookReaderView
+BookReaderView *-- BookSettingParams
+BookReaderView *-- BookPageElement
+BookReaderView *-- BookTextSelectorElement
+BaseReaderView *-- PageAnimController
+BaseReaderView *-- PageSnapshotCache
+PageSnapshotCache o-- PageSnapshot
+PageAnimController.PageCarver <|.. BaseReaderView
+
+@enduml
