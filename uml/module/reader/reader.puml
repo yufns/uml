@@ -3,7 +3,7 @@
 interface OnBookViewListener{
   void onSelectorVisible(boolean visible)//是否处于文字选择状态
   void onNotePopOpen(int type)//是否打开了笔记编辑框
-  void onBookViewCenterClick()//是否点击了阅读器中心区域
+  void onBookViewCenterClick()//点击了阅读器中心区域,打开PopWindow
   void onBookPageChanged()//翻页
 }
 

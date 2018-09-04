@@ -1,4 +1,7 @@
 @startuml
+BookReaderActivity --> Presenter
+Presenter --> Presenter : getChapterContent
 
+BookReaderActivity <-- Presenter
 
 @enduml

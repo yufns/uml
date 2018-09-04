@@ -1,0 +1,51 @@
+@startuml
+autonumber
+BookReaderActivity --> BookReaderView
+BookReaderView --> BookReaderView : onTouchEvent(MotionEvent event)
+alt touch event
+else MotionEvent.ACTION_DOWN
+BookReaderView --> BaseReaderView : onTouchEvent(MotionEvent event)
+else MotionEvent.ACTION_MOVE
+BookReaderView --> BaseReaderView : onTouchEvent(MotionEvent event)
+else MotionEvent.ACTION_UP
+alt 是否需要回调
+BookReaderView --> OnBookViewListener : onBookViewCenterClick()
+else
+BookReaderView --> BaseReaderView : onTouchEvent(MotionEvent event)
+end
+end
+
+BaseReaderView --> HorTranslationAnimController : dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)
+
+alt Action
+else Down
+HorTranslationAnimController -->  HorTranslationAnimController : 记录位置
+else Move
+alt RTL
+else RTL
+HorTranslationAnimController --> BookReaderView : requestNextPage()
+BookReaderView --> BookReaderActivity : onNextChapter()
+else LTR
+HorTranslationAnimController --> BookReaderView : requestPrePage()
+BookReaderView --> BookReaderActivity : onPreChapter()
+end
+HorTranslationAnimController --> BookReaderView : getCurrentPageIndex()
+HorTranslationAnimController --> HorTranslationAnimController : onRequestPage()
+else Up
+alt RTL
+else RTL
+HorTranslationAnimController --> BookReaderView : requestNextPage()
+BookReaderView --> BookReaderActivity : onNextChapter()
+
+
+else LTR
+HorTranslationAnimController --> BookReaderView : requestPrePage()
+BookReaderView --> BookReaderActivity : onPreChapter()
+end
+HorTranslationAnimController --> BookReaderView : getCurrentPageIndex()
+HorTranslationAnimController --> HorTranslationAnimController : startAnim()
+end
+HorTranslationAnimController --> BookReaderView : requestInvalidate()
+
+
+@enduml

@@ -23,7 +23,7 @@ BookLineElement --> BookLineElement : drawWithDigests->draw
 
 else 绘制图片
 BookPageElement --> BookImageElement : draw
-BookImageElement --> BookImageElement : syncDrawWithinBitmap->draw
+BookImageElement --> BookImageElement : drawWithDigests(canvas, bookLineData, bookReaderView.getCurrentDigests(index))\ndraw(canvas, bookLineData.getCharArea())
 end
 
 
