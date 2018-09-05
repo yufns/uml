@@ -1,7 +1,21 @@
 @startuml
-BookReaderActivity --> Presenter
-Presenter --> Presenter : getChapterContent
+autonumber
+activate Presenter
+Presenter --> Presenter : getChapterDetail(final Book book, final long chapterId, final int chapterIndex)
+activate Presenter
+Presenter --> CEBPlugin : parseChapterContent(int chapterIndex)
+Presenter <-- CEBPlugin : BookChapterData
 
-BookReaderActivity <-- Presenter
+Presenter --> Presenter : getChapterDetailFromServer(final Book book, final long chapterId, final int chapterIndex)
+activate Presenter
+Presenter --> XJApis : getChapterBody
+Presenter <-- XJApis : Observable<ApiResponse<BookContentBean>>
+Presenter --> HtmlParser : parserOnlineChapterContent(String html)
+Presenter <-- HtmlParser : BookChapterData
+deactivate Presenter
+deactivate Presenter
+deactivate Presenter
+
+Presenter --> BookReaderActivity : onChapterContent(List<BookPageData> bookPageDataList, int chapterIndex, int position)
 
 @enduml
