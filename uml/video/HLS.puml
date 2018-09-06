@@ -1,0 +1,7 @@
+@startuml
+autonumber
+Input --> Server : 视频上传
+Server --> Server : encoder
+Server --> Server : 转码 Ts&M3U8
+Server --> USER : 播放视频
+@enduml
