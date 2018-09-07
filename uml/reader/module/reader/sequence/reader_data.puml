@@ -2,10 +2,14 @@
 autonumber
 activate Presenter
 Presenter --> Presenter : getChapterDetail(final Book book, final long chapterId, final int chapterIndex)
+alt
+else CEBP
 activate Presenter
 Presenter --> CEBPlugin : parseChapterContent(int chapterIndex)
 Presenter <-- CEBPlugin : BookChapterData
+deactivate Presenter
 
+else Server
 Presenter --> Presenter : getChapterDetailFromServer(final Book book, final long chapterId, final int chapterIndex)
 activate Presenter
 Presenter --> XJApis : getChapterBody
@@ -14,7 +18,8 @@ Presenter --> HtmlParser : parserOnlineChapterContent(String html)
 Presenter <-- HtmlParser : BookChapterData
 deactivate Presenter
 deactivate Presenter
-deactivate Presenter
+end
+
 
 Presenter --> BookReaderActivity : onChapterContent(List<BookPageData> bookPageDataList, int chapterIndex, int position)
 
