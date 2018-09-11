@@ -1,49 +1,75 @@
 @startuml
 autonumber
-BookReaderActivity --> BookReaderView
-BookReaderView --> BookReaderView : onTouchEvent(MotionEvent event)
+BookReaderActivity --> BookReaderView : dispatchTouchEvent(MotionEvent event)
+
+
+activate BookReaderView
+BaseReaderView --> HorTranslationAnimController : dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)
 alt touch event
 else MotionEvent.ACTION_DOWN
-BookReaderView --> BaseReaderView : onTouchEvent(MotionEvent event)
+BaseReaderView --> HorTranslationAnimController : dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)
+
 else MotionEvent.ACTION_MOVE
-BookReaderView --> BaseReaderView : onTouchEvent(MotionEvent event)
+BaseReaderView --> HorTranslationAnimController : dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)
+
 else MotionEvent.ACTION_UP
 alt 是否需要回调
-BookReaderView --> OnBookViewListener : onBookViewCenterClick()
-else
-BookReaderView --> BaseReaderView : onTouchEvent(MotionEvent event)
-end
-end
-
+else 屏幕中心区域点击回调
+BookReaderView --> BookReaderActivity : onBookViewCenterClick()
+else touch
 BaseReaderView --> HorTranslationAnimController : dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)
+
+end
+end
+deactivate BookReaderView
+
+
+
+
 
 alt Action
 else Down
-HorTranslationAnimController -->  HorTranslationAnimController : 记录位置
+HorTranslationAnimController -->  HorTranslationAnimController : dispatchAnimEnd(PageCarver pageCarver)
+
 else Move
-alt RTL
-else RTL
-HorTranslationAnimController --> BookReaderView : requestNextPage()
-BookReaderView --> BookReaderActivity : onNextChapter()
-else LTR
-HorTranslationAnimController --> BookReaderView : requestPrePage()
-BookReaderView --> BookReaderActivity : onPreChapter()
-end
-HorTranslationAnimController --> BookReaderView : getCurrentPageIndex()
-HorTranslationAnimController --> HorTranslationAnimController : onRequestPage()
+  alt isRequestNextPage
+    else 为null
+      alt RLT
+      else RLT
+        HorTranslationAnimController --> BookReaderView : requestNextPage()
+        BookReaderView --> BookReaderActivity : onNextChapter()
+        alt requestPageIndex
+          else 不为null
+            HorTranslationAnimController --> HorTranslationAnimController : onRequestPage()
+          else 为null
+            HorTranslationAnimController --> HorTranslationAnimController : 记录数据
+        end
+      else LTR
+        HorTranslationAnimController --> BookReaderView : requestPrePage()
+        BookReaderView --> BookReaderActivity : onPreChapter()
+        alt requestPageIndex
+          else 不为null
+            HorTranslationAnimController --> HorTranslationAnimController : onRequestPage()
+          else 为null
+            HorTranslationAnimController --> HorTranslationAnimController : 记录数据
+        end
+      end
+    else 不为null
+      HorTranslationAnimController --> HorTranslationAnimController : 记录坐标
+  end
+
 else Up
-alt RTL
-else RTL
-HorTranslationAnimController --> BookReaderView : requestNextPage()
-BookReaderView --> BookReaderActivity : onNextChapter()
-
-
-else LTR
-HorTranslationAnimController --> BookReaderView : requestPrePage()
-BookReaderView --> BookReaderActivity : onPreChapter()
-end
-HorTranslationAnimController --> BookReaderView : getCurrentPageIndex()
-HorTranslationAnimController --> HorTranslationAnimController : startAnim()
+  alt isRequestNextPage
+  else 不为null
+    HorTranslationAnimController --> HorTranslationAnimController : startAnim(boolean isRequestNext, PageCarver pageCarver)
+  else 为null
+    alt toNext
+      else true
+        HorTranslationAnimController --> BookReaderView : requestNextPage()
+      else false
+        HorTranslationAnimController --> BookReaderView : requestPrePage()
+    end
+  end
 end
 HorTranslationAnimController --> BookReaderView : requestInvalidate()
 
