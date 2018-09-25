@@ -1,15 +1,21 @@
 @startuml
 autonumber
 activate BaseReaderView
-BaseReaderView -> BaseReaderView: onDraw
-activate BaseReaderView
-BaseReaderView --> BaseReaderView: drawPage
-activate BaseReaderView
-BaseReaderView --> BaseReaderView: drawPageContent(Canvas canvas, int pageIndex)
-BaseReaderView --> PageSnapshot: draw(Canvas canvas)
-BaseReaderView --> BaseReaderView: drawCover
-deactivate BaseReaderView
-deactivate BaseReaderView
+  BaseReaderView -> BaseReaderView: onDraw
+  BaseReaderView -> BaseReaderView: dispatchDrawPage
+  activate BaseReaderView
+    BaseReaderView --> BaseReaderView: drawPage
+    activate BaseReaderView
+      alt 绘制
+        else drawCover
+          BaseReaderView --> BaseReaderView: drawCover
+          BaseReaderView --> PageSnapshot: draw(Canvas canvas)
+        else drawPageContent
+          BaseReaderView --> BaseReaderView: drawPageContent(Canvas canvas, int pageIndex)
+          BaseReaderView --> PageSnapshot: draw(Canvas canvas)
+      end
+    deactivate BaseReaderView
+  deactivate BaseReaderView
 deactivate BaseReaderView
 
 

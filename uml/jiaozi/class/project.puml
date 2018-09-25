@@ -1,0 +1,10 @@
+@startuml
+class JZMediaManager
+
+SurfaceTextureListener <|.. JZMediaManager
+
+abstract class Jzvd
+FrameLayout <|-- Jzvd
+Jzvd <|-- JzvdStd
+
+@enduml

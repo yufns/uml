@@ -1,0 +1,28 @@
+@startuml
+autonumber
+alt header绘制
+  'BookPageElement --> BookHeaderElement : draw(Canvas canvas)
+  else 绘制章节第一页Title
+  BookHeaderElement --> BookHeaderElement : drawFirstPage
+  else 绘制其他页面title
+  BookHeaderElement --> BookHeaderElement : draw(Canvas canvas)
+end
+
+BookPageElement --> BookFooterElement : draw(Canvas canvas)
+
+alt
+  else 绘制文本
+  BookPageElement --> BookLineElement : drawWithDigests(Canvas canvas, BookLineData bookLineData, List<BookDigests> bookDigestsList)
+
+  else 绘制图片
+  BookPageElement --> BookImageElement : syncDrawWithinBitmap(Canvas canvas, BookImageData bookImageData, final Bitmap sourceBitmap)
+end
+
+'BookPageElement --> BookTextSelectorElement : drawLeftCursor
+'BookPageElement --> BookTextSelectorElement : drawRightCursor
+'BookPageElement --> BookTextSelectorElement : drawMagnifier
+
+@enduml
+
+
+

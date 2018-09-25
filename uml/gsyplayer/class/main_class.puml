@@ -1,0 +1,54 @@
+@startuml
+abstract GSYTextureRenderView
+note right : 绘制View
+abstract GSYVideoView
+note right : 视频回调与状态处理等相关层;自定义必须实现
+abstract GSYVideoControlView
+note right : 播放UI的显示、控制层、手势处理等;自定义必须实现
+abstract GSYBaseVideoPlayer
+note right : 处理全屏和小屏幕逻辑
+abstract GSYVideoPlayer
+note right : 兼容的空View，目前用于 GSYVideoManager的设置
+class StandardGSYVideoPlayer
+note right : 标准播放器，继承之后实现一些ui显示效果，如显示／隐藏ui，播放按键等
+
+AudioManager --* GSYVideoView
+
+class GSYRenderView
+interface IGSYRenderView
+
+class GSYSurfaceView
+class GSYTextureView
+class GSYVideoGLView
+class ProxyCacheManager
+note left : 代理对象
+
+GSYTextureRenderView <|-- GSYVideoView
+GSYRenderView --* GSYTextureRenderView
+IGSYRenderView --* GSYRenderView
+
+
+GSYSurfaceView ..|> IGSYRenderView
+GSYTextureView ..|> IGSYRenderView
+GSYVideoGLView ..|> IGSYRenderView
+
+
+GSYVideoManager <|.. GSYVideoPlayer
+GSYVideoBaseManager <|-- GSYVideoManager
+IPlayerManager --* GSYVideoBaseManager
+ICacheManager --* GSYVideoBaseManager
+ProxyCacheManager ..|> ICacheManager
+HttpProxyCacheServer --* ProxyCacheManager
+
+
+SystemPlayerManager ..|> IPlayerManager
+AndroidMediaPlayer --* SystemPlayerManager
+
+
+GSYVideoView <|-- GSYVideoControlView
+GSYVideoControlView <|-- GSYBaseVideoPlayer
+GSYBaseVideoPlayer <|-- GSYVideoPlayer
+GSYVideoPlayer <|-- StandardGSYVideoPlayer
+
+
+@enduml

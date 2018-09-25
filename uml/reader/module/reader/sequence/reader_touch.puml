@@ -42,7 +42,7 @@ else Move
           else 不为null
             HorTranslationAnimController --> HorTranslationAnimController : onRequestPage()
           else 为null
-            HorTranslationAnimController --> HorTranslationAnimController : 记录数据
+            HorTranslationAnimController --> HorTranslationAnimController : onDrawAnim
         end
       else LTR
         HorTranslationAnimController --> BookReaderView : requestPrePage()
@@ -51,7 +51,7 @@ else Move
           else 不为null
             HorTranslationAnimController --> HorTranslationAnimController : onRequestPage()
           else 为null
-            HorTranslationAnimController --> HorTranslationAnimController : 记录数据
+            HorTranslationAnimController --> HorTranslationAnimController : onDrawAnim
         end
       end
     else 不为null

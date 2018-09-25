@@ -1,0 +1,26 @@
+@startuml
+autonumber
+activate StandardGSYVideoPlayer
+StandardGSYVideoPlayer -> StandardGSYVideoPlayer : startPlayLogic
+opt mVideoAllCallBack
+StandardGSYVideoPlayer -> VideoAllCallBack : onClickStartThumb
+VideoAllCallBack --> StandardGSYVideoPlayer : 各种状态的回调
+
+activate StandardGSYVideoPlayer
+StandardGSYVideoPlayer -> StandardGSYVideoPlayer : prepareVideo
+opt mSetUpLazy 列表优化
+activate GSYVideoView
+StandardGSYVideoPlayer -> GSYVideoView : setUp
+GSYVideoView -> GSYVideoView : setUp
+deactivate GSYVideoView
+
+end
+StandardGSYVideoPlayer -> GSYVideoView : prepareVideo
+activate GSYVideoView
+GSYVideoView -> GSYVideoView : startPrepare
+deactivate GSYVideoView
+deactivate StandardGSYVideoPlayer
+StandardGSYVideoPlayer -> StandardGSYVideoPlayer : startDismissControlViewTimer
+deactivate StandardGSYVideoPlayer
+
+@enduml
