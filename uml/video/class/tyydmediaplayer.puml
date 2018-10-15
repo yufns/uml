@@ -1,0 +1,71 @@
+@startuml
+
+class TyydViewPlayerView {
+  - void registerViews(View view)
+}
+
+abstract BaseTyydViewPlayer{
+  -- field --
+  - HashMap<View, Integer> views
+  - ITouchListener iTouchListener;
+  - GestureDetectorCompat gestureDetectorCompat;
+  -- abstract --
+  {abstract} + ITyydMediaPlayer getMediaPlayer(IRenderView renderView);
+  {abstract} + @LayoutRes int getLayoutId();
+  {abstract} + IRenderView getRenderView();
+  -- public --
+  + void setState(@Status int mState)
+  + void play()
+  + void setDataAndSoruce(String url)
+  -- protected --
+  # void register(View view, @BindingView int actions)
+  # void bindingViews()
+}
+
+interface ITyydMediaPlayer{
+  void setProgressListener(IProgressListener progressListener);
+  void prepar(MediaPlayer.OnPreparedListener onPreparedListener);
+  void setDataSource(String path) throws IOException;
+  void play();
+  void onPause();
+  void onResume();
+  void onStop();
+  void onDestory();
+  void setDisplay(SurfaceHolder surfaceHolder);
+  void seekTo(int progress);
+}
+
+class MediaPlayerProxy{
+  -- field --
+  - AudioManager mAudioManager;
+}
+
+ITyydMediaPlayer <|.. MediaPlayerProxy
+
+class PlayerStatusManager{
+
+}
+
+TyydViewPlayerView  --|> BaseTyydViewPlayer
+BaseTyydViewPlayer *-- MediaPlayerProxy
+BaseTyydViewPlayer *-- PlayerStatusManager
+
+
+MediaPlayerProxy *-- ITyydMediaPlayer
+
+interface IRenderView{
+  void saveCurrentFrame();
+  SurfaceHolder getHolderView();
+}
+
+class SystemMediaPlayer{
+  - MediaPlayer mediaPlayer;
+  - IProgressListener progressListener;
+  - MediaPlayerListener mMediaPlayerListener;
+}
+SystemMediaPlayer *-- IRenderView
+IRenderView <|.. TyydSurfaceView
+
+ITyydMediaPlayer <|.. SystemMediaPlayer
+
+@enduml

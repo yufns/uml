@@ -8,16 +8,16 @@ interface OnBookViewListener{
 }
 
 interface OnChapterChangeListener{
-  void onNextChapter(boolean isChapterTurn, int chapterIndex, boolean isEndIndex)
-  void onPreChapter(boolean isChapterTurn, int chapterIndex, boolean isStartIndex)
+  void onNextChapter(...)
+  void onPreChapter(...)
 }
 interface  Presenter{
   void getBookDetail(long bookId)
-  void getChapterContent(Book book, long chapterId, int chapterIndex, int position)//从网络获取文章信息
+  void getChapterContent(...)//从网络获取文章信息
 }
 
 interface View{
-  void onChapterContent(List<BookPageData> bookPageDataList, int chapterIndex, int position);//显示章节内容
+  void onChapterContent(...);//显示章节内容
 }
 
 

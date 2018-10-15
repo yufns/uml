@@ -1,7 +1,10 @@
 @startuml
 abstract GSYTextureRenderView
 note right : 绘制View
-abstract GSYVideoView
+abstract GSYVideoView{
+  # String mOriginUrl
+  # File mCachePath
+}
 note right : 视频回调与状态处理等相关层;自定义必须实现
 abstract GSYVideoControlView
 note right : 播放UI的显示、控制层、手势处理等;自定义必须实现
