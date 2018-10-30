@@ -9,17 +9,30 @@ abstract BaseTyydViewPlayer{
   - HashMap<View, Integer> views
   - ITouchListener iTouchListener;
   - GestureDetectorCompat gestureDetectorCompat;
+  - Consumer mCompletionConsumer;
+  - Consumer mErrorConsumer;
   -- abstract --
   {abstract} + ITyydMediaPlayer getMediaPlayer(IRenderView renderView);
   {abstract} + @LayoutRes int getLayoutId();
   {abstract} + IRenderView getRenderView();
-  -- public --
+  -- 用户接口 --
   + void setState(@Status int mState)
-  + void play()
   + void setDataAndSoruce(String url)
   -- protected --
   # void register(View view, @BindingView int actions)
   # void bindingViews()
+  -- 横竖屏 --
+  - void setPortrait(Activity activity)
+  - void setLandscape(Activity activity)
+  -- 初始化 --
+  - void initConsumer()
+  - void initViews(View key, Integer value)
+  - void setClickListener(View key, final Integer value)
+  - void initTouch()
+  -- 播放逻辑 --
+  - void checkNetwork()
+  - void progressRenderView()
+  - private void play()
 }
 
 interface ITyydMediaPlayer{
@@ -33,18 +46,23 @@ interface ITyydMediaPlayer{
   void onDestory();
   void setDisplay(SurfaceHolder surfaceHolder);
   void seekTo(int progress);
+  void changeUrl(@NonNull String url)throws IOException;
 }
 
 class MediaPlayerProxy{
   -- field --
   - AudioManager mAudioManager;
+  - Consumer mCompletionConsumer;
 }
+note left:播放器代理对象
 
 ITyydMediaPlayer <|.. MediaPlayerProxy
 
 class PlayerStatusManager{
-
+  - IStatusChangeListener iStatusChangeListener;
+  + void setStatus(@Status int action)
 }
+note right:播放器UI管理器
 
 TyydViewPlayerView  --|> BaseTyydViewPlayer
 BaseTyydViewPlayer *-- MediaPlayerProxy
@@ -62,10 +80,24 @@ class SystemMediaPlayer{
   - MediaPlayer mediaPlayer;
   - IProgressListener progressListener;
   - MediaPlayerListener mMediaPlayerListener;
+  - IRenderView mIRenderView;
 }
 SystemMediaPlayer *-- IRenderView
 IRenderView <|.. TyydSurfaceView
 
 ITyydMediaPlayer <|.. SystemMediaPlayer
+
+class IJKMediaPlayer{
+
+}
+
+class TyydTextureView{
+
+}
+
+IJKMediaPlayer *-- IRenderView
+ITyydMediaPlayer <|.. IJKMediaPlayer
+
+IRenderView <|.. TyydTextureView
 
 @enduml
