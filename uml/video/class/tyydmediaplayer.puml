@@ -1,7 +1,12 @@
 @startuml
 
-class TyydViewPlayerView {
+class TyydVideoPlayerView {
   - void registerViews(View view)
+}
+
+class TyydMusicPlayerView {
+  - void registerViews(View view)
+  + void setOnMenuClickListener(OnMenuClickListener onMenuClickListener)
 }
 
 abstract BaseTyydViewPlayer{
@@ -12,15 +17,25 @@ abstract BaseTyydViewPlayer{
   - Consumer mCompletionConsumer;
   - Consumer mErrorConsumer;
   -- abstract --
-  {abstract} + ITyydMediaPlayer getMediaPlayer(IRenderView renderView);
-  {abstract} + @LayoutRes int getLayoutId();
-  {abstract} + IRenderView getRenderView();
+  {abstract} # ITyydMediaPlayer getMediaPlayer(IRenderView renderView);
+  {abstract} # @LayoutRes int getLayoutId();
+  {abstract} # IRenderView getRenderView();
+  {abstract} # @PlayerType int getPlayerType();
   -- 用户接口 --
+  + void changeChapter(int index)
+  + void startPlay()
   + void setState(@Status int mState)
-  + void setDataAndSoruce(String url)
+  + void setDataAndSoruce(MediaInfoBean mediaInfoBean)
+  + void setPlayeMode(@PlayerMode int mode)
+  + void setSharpness(@Sharpness int sharpness)
+  + void setProgressListener(IProgressListener progressListener)
+  + void setChapterChangerListener(OnChapterChangerListener onChapterChangerListener)
+  + void setOrientation()
+  + void setOnCaptionListener(OnCaptionListener onCaptionListener)
   -- protected --
   # void register(View view, @BindingView int actions)
   # void bindingViews()
+  # @PlayerMode int getPlayeMode()
   -- 横竖屏 --
   - void setPortrait(Activity activity)
   - void setLandscape(Activity activity)
@@ -33,20 +48,41 @@ abstract BaseTyydViewPlayer{
   - void checkNetwork()
   - void progressRenderView()
   - private void play()
+  -- 字幕 --
+  - void setCaptionUrl(final String url, final int type)
+  - CaptionItem getCaption(int currentPosition)
+  - File getDiskCacheDir(Context context, String uniqueName)
 }
 
 interface ITyydMediaPlayer{
-  void setProgressListener(IProgressListener progressListener);
-  void prepar(MediaPlayer.OnPreparedListener onPreparedListener);
-  void setDataSource(String path) throws IOException;
+  void setProgressListener(@NonNull IProgressListener progressListener);
+  void setChapterChangerListener(OnChapterChangerListener onChapterChangerListener);
+  void prepare(@NonNull PreparedListener preparedListener);
+  void setCompletionConsumerBaseView(@NonNull Consumer consumerBaseView);
+  void setErrorConsumerBaseView(@NonNull Consumer consumerBaseView);
   void play();
+  void setDisplay(@NonNull SurfaceHolder surfaceHolder);
+  void seekTo(int progress);
   void onPause();
   void onResume();
   void onStop();
   void onDestory();
-  void setDisplay(SurfaceHolder surfaceHolder);
-  void seekTo(int progress);
-  void changeUrl(@NonNull String url)throws IOException;
+  @PlayerState int getPlayerState();
+  boolean isPlaying();
+  int getCurPosition();
+  List<BookContentBean> getCurMediaInfo();
+  int getTotalTime();
+  void changeSharpnessByIndex(int index) throws IOException;
+  void setDataSource(List<Integer> urls,long bookId) throws IOException;
+  void setDataSource(List<Integer> urls,long bookId,int index) throws IOException;
+  void setPlayerMode(@PlayerMode int mode);
+  @PlayerMode int getPlayerMode();
+  void playNext();
+  void playPre();
+  void changeChapter(int index);
+  void resetUrl() throws IOException;
+  String getCurAudioRate();
+  void retory();
 }
 
 class MediaPlayerProxy{
@@ -64,7 +100,8 @@ class PlayerStatusManager{
 }
 note right:播放器UI管理器
 
-TyydViewPlayerView  --|> BaseTyydViewPlayer
+TyydVideoPlayerView  --|> BaseTyydViewPlayer
+TyydMusicPlayerView  --|> BaseTyydViewPlayer
 BaseTyydViewPlayer *-- MediaPlayerProxy
 BaseTyydViewPlayer *-- PlayerStatusManager
 

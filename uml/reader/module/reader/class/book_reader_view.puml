@@ -16,12 +16,14 @@ abstract class BaseReaderView{
   {abstract} void onPageRequest(int currentPage, int requestPage)
 }
 
-BaseReaderView <|-- BookReaderView
-BookReaderView *-- BookSettingParams
-BookReaderView *-- BookPageElement
-BookReaderView *-- BookTextSelectorElement
-BaseReaderView *-- PageAnimController
-BaseReaderView *-- PageSnapshotCache
+BookReaderView --|> BaseReaderView
+
+BookSettingParams --* BookReaderView
+BookPageElement --* BookReaderView
+BookTextSelectorElement --* BookReaderView
+PageAnimController --* BookReaderView
+PageSnapshotCache --* BookReaderView
+
 PageSnapshotCache o-- PageSnapshot
 PageAnimController.PageCarver <|.. BaseReaderView
 
