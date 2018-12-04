@@ -1,0 +1,44 @@
+@startuml
+class MultiTypeAdapter{
+  -- Filed --
+  - List<?> items;
+  - TypePool typePool;
+  -- public --
+  + <T> OneToManyFlow<T> register(Class<? extends T> clazz)
+  + <T> void register(Class<? extends T> clazz, ItemViewBinder<T, ?> binder)
+  + <T> void register(Class<? extends T> clazz, ItemViewBinder<T, ?> binder, Linker<T> linker)
+  -- Override --
+  + final void onViewRecycled
+  + final void onViewDetachedFromWindow
+  + final boolean onFailedToRecycleView
+  + final ViewHolder onCreateViewHolder(ViewGroup parent, int indexViewType)
+  + final int getItemViewType(int position)
+  + final int getItemCount()
+  + final long getItemId(int position)
+  + final void onBindViewHolder(ViewHolder holder, int position, @NonNull List<Object> payloads)
+}
+
+OneToManyBuilder --o MultiTypeAdapter
+
+OneToManyFlow <|.. OneToManyBuilder
+OneToManyEndpoint <|.. OneToManyBuilder
+
+
+
+interface TypePool{
+  <T> void register(@NonNull Class<? extends T> clazz, @NonNull ItemViewBinder<T, ?> binder, @NonNull Linker<T> linker);
+}
+
+class MultiTypePool{
+  -- Filed --
+  - final List<Class<?>> classes;
+  - final List<ItemViewBinder<?, ?>> binders;
+  - final List<Linker<?>> linkers;
+}
+
+TypePool ..* MultiTypeAdapter
+
+MultiTypePool ..|> TypePool
+
+
+@enduml
