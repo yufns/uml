@@ -27,7 +27,6 @@ abstract BaseTyydViewPlayer{
   + void setState(@Status int mState)
   + void setDataAndSoruce(MediaInfoBean mediaInfoBean)
   + void setPlayeMode(@PlayerMode int mode)
-  + void setSharpness(@Sharpness int sharpness)
   + void setProgressListener(IProgressListener progressListener)
   + void setChapterChangerListener(OnChapterChangerListener onChapterChangerListener)
   + void setOrientation()

@@ -1,5 +1,4 @@
 @startuml
-
 interface OnBookViewListener{
   void onSelectorVisible(boolean visible)//是否处于文字选择状态
   void onNotePopOpen(int type)//是否打开了笔记编辑框
@@ -20,12 +19,10 @@ interface View{
   void onChapterContent(...);//显示章节内容
 }
 
-
 class BookReaderActivity
 class CatalogFragment
 class BookReaderMenuPopWindow
 class ReaderStatisticsHelper
-
 
 BookReaderActivity *-- BookReaderView
 BookReaderActivity *-- CatalogFragment
@@ -33,10 +30,101 @@ BookReaderActivity *-- BookReaderMenuPopWindow
 BookReaderActivity *-- ReaderStatisticsHelper
 BookReaderActivity *-- Presenter
 
-
 View <|.. BookReaderActivity
 OnBookViewListener <|.. BookReaderActivity
 OnChapterChangeListener <|.. BookReaderActivity
 
+interface PageCarver{
+  void drawPage(Canvas canvas, int index)
+  Integer requestPrePage();
+  Integer requestNextPage();
+  void requestInvalidate();
+  int getCurrentPageIndex();
+  int getContentWidth();
+  int getContentHeight();
+  int getScreenWidth();
+  int getScreenHeight();
+  int getPageBackgroundColor();
+  void onStartAnim(boolean isCancel);
+  void onStopAnim(boolean isCancel);
+}
 
+class PageSnapshot
+class PageSnapshotCache
+note top:页面快照缓存
+class BookReaderView{
+  -- Filed --
+  OnChapterChangeListener
+  -- Override --
+  + boolean dispatchTouchEvent(MotionEvent event)
+  + boolean onTouchEvent(MotionEvent event)
+}
+class BookSettingParams
+note top:阅读器配置参数
+abstract class BaseReaderView{
+  -- Override --
+  # void onDraw(Canvss canvas)
+  + boolean onTouchEvent(MotionEvent event)
+  -- abstract --
+  {abstract} void drawPageContent(Canvas canvas, int pageIndex)
+  {abstract} void onPageEndChanged(int currentPage)
+  {abstract} void onPageStartChange(int requestPage)
+  {abstract} void onPageRequest(int currentPage, int requestPage)
+}
+
+BaseReaderView <|-- BookReaderView
+
+BookReaderView *-- BookSettingParams
+BookReaderView *-- ResElement
+BookReaderView *-- PageAnimController
+BookReaderView *-- PageSnapshotCache
+
+PageSnapshotCache o-- PageSnapshot
+PageCarver <|.. BaseReaderView
+
+abstract class ResElement{
+  -- abstract --
+  + {abstract} void update(ReaderSettingParams params);
+  + {abstract} int getHeight();
+  + {abstract} void draw(Canvas canvas);//绘制内容
+  + {abstract} void destroy();
+  -- protected --
+  # int getTextHeight(Paint paint)
+  # int getTextBaseLine(Paint paint)
+}
+note bottom:多个element共同负责内容的绘制(头,尾,正文等)
+
+
+abstract class PageAnimController{
+  -- abstract --
+  {abstract} void dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)
+  {abstract} boolean dispatchDrawPage(Canvas canvas, PageCarver pageCarver)
+  {abstract} void startAnim(int fromIndex, int toIndex, boolean isNext, PageCarver pageCarver)
+  {abstract} void stopAnim(PageCarver pageCarver)
+  {abstract} boolean isAnimStop();
+}
+note top:页面动效控制器
+
+abstract class AbsHorGestureAnimController{
+  - Scroller mScroller
+  -- abstract --
+  {abstract} void onAnimStart(boolean isCancelAnim);
+  {abstract} void onAnimEnd(boolean isCancelAnim);
+  {abstract} void onRequestPage(boolean isRequestNext, int fromIndex, int toIndex, float x, float y);
+  {abstract} void onDrawAnim(Canvas canvas, boolean isCancelAnim, boolean isNext, PageCarver pageCarver);
+  {abstract} boolean isAnimStop();
+  -- Oberride --
+  + void dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)
+  + boolean dispatchDrawPage(Canvas canvas, PageCarver pageCarver)
+  + void startAnim(int fromIndex, int toIndex, boolean isNext, PageCarver pageCarver)
+  + boolean isAnimStop()
+  + void stopAnim(PageCarver pageCarver)
+}
+class PageTurningAnimController
+class HorTranslationAnimController
+
+PageAnimController <|-- AbsHorGestureAnimController
+
+AbsHorGestureAnimController <|-- PageTurningAnimController
+AbsHorGestureAnimController <|-- HorTranslationAnimController
 @enduml

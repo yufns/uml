@@ -1,4 +1,20 @@
 @startuml
+
+interface PageCarver{
+  void drawPage(Canvas canvas, int index)
+  Integer requestPrePage();
+  Integer requestNextPage();
+  void requestInvalidate();
+  int getCurrentPageIndex();
+  int getContentWidth();
+  int getContentHeight();
+  int getScreenWidth();
+  int getScreenHeight();
+  int getPageBackgroundColor();
+  void onStartAnim(boolean isCancel);
+  void onStopAnim(boolean isCancel);
+}
+
 class PageSnapshot
 class PageSnapshotCache
 class BookReaderView{
@@ -25,6 +41,6 @@ PageAnimController --* BookReaderView
 PageSnapshotCache --* BookReaderView
 
 PageSnapshotCache o-- PageSnapshot
-PageAnimController.PageCarver <|.. BaseReaderView
+PageCarver <|.. BaseReaderView
 
 @enduml

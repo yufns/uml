@@ -9,14 +9,19 @@ abstract class PageAnimController{
 
 abstract class AbsHorGestureAnimController{
   - Scroller mScroller
+  -- abstract --
+  + abstract void onAnimStart(boolean isCancelAnim);
+  + abstract void onAnimEnd(boolean isCancelAnim);
+  + abstract void onRequestPage(boolean isRequestNext, int fromIndex, int toIndex, float x, float y);
+  + abstract void onDrawAnim(Canvas canvas, boolean isCancelAnim, boolean isNext, PageCarver pageCarver);
+  + abstract boolean isAnimStop();
 }
 class AutoAnimController
 class NoAnimController
 class PageTurningAnimController
 class HorTranslationAnimController
 
-interface PageAnimController.PageCarver{
-
+interface PageCarver{
   void drawPage(Canvas canvas, int index)//区分第一页和其他页
   Integer requestPrePage();
   Integer requestNextPage();
@@ -30,7 +35,7 @@ interface PageAnimController.PageCarver{
   void onStartAnim(boolean isCancel);
   void onStopAnim(boolean isCancel);
 }
-
+PageCarver --+ PageAnimController
 PageAnimController <|-- AbsHorGestureAnimController
 PageAnimController <|-- NoAnimController
 PageAnimController <|-- AutoAnimController

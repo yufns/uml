@@ -13,6 +13,7 @@ abstract class ResElement{
 class BookTextSelectorElement
 
 class BookPageElement{
+  -- Field --
   - List<BookPageData> pages//需要绘制的数据
   -- public --
   + List<BookPageData> splitChapterData(BookChapterData chapterData)
