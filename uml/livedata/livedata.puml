@@ -1,0 +1,19 @@
+@startuml
+interface Navigator
+class Activity
+class Fragment
+class ViewModel
+class ViewDataBinding
+note top:编译期自动生成
+class Repository
+
+
+ViewModel --* Activity : 观察事件
+Navigator <|.. Activity
+ViewModel --* Fragment : 观察数据变化,更新UI
+ViewDataBinding --* Fragment : 数据跟UI绑定
+Repository --* ViewModel
+ViewModel --* ViewDataBinding : 绑定的过程
+
+
+@enduml

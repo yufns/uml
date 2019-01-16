@@ -1,0 +1,78 @@
+@startuml
+abstract class DataSource{
+  -- method --
+  + {abstract} DataSource<Key, Value> create();
+}
+note top: 数据源
+abstract class PositionalDataSource
+abstract class ContiguousDataSource
+abstract class ItemKeyedDataSource
+abstract class PageKeyedDataSource
+class LivePagedListBuilder<Key, Value>
+class AsyncPagedListDiffer<T>{
+  -- Field --
+  - PagedList<T> mPagedList
+  - PagedList<T> mSnapshot
+  -- method --
+  + void submitList(final PagedList<T> pagedList)
+  + T getItem(int index)
+}
+abstract class Factory<Key, Value>{
+  + {abstract} DataSource<Key, Value> create()
+}
+class PagedListAdapter<T, VH extends ViewHolder>{
+  -- method --
+  + void submitList(PagedList<T> pagedList)
+  # T getItem(int position)
+}
+note bottom:展示数据
+class Builder
+abstract class BoundaryCallback
+abstract class Callback
+
+
+abstract class PagedList<T>{
+  -- method --
+  - {static} PagedList create()
+  + void loadAround(int index)
+  -- abstract method --
+  + {abstract} void loadAroundInternal(int index)
+}
+note bottom: 加载数据
+class ContiguousPagedList{
+  - void schedulePrepend()
+}
+class Config
+Config --* PagedList
+
+
+ContiguousPagedList --|> PagedList
+SnapshotPagedList --|> PagedList
+TiledPagedList --|> PagedList
+
+ContiguousDataSource   <|-- ItemKeyedDataSource
+ContiguousDataSource   <|-- PageKeyedDataSource
+DataSource   <|-- PositionalDataSource
+DataSource   <|-- ContiguousDataSource
+
+
+DataSource --* SnapshotPagedList
+ContiguousDataSource --* ContiguousPagedList
+PositionalDataSource --* TiledPagedList
+
+Config --* LivePagedListBuilder
+AsyncPagedListDiffer --* PagedListAdapter
+PagedList --* PagedListAdapter
+
+abstract class ItemCallback{
+  + {abstract} boolean areItemsTheSame(T oldItem, T newItem)
+  + {abstract} boolean areContentsTheSame(T oldItem, T newItem)
+}
+
+ItemCallback ..|> PagedListAdapter
+
+
+abstract class Callback
+note top:可变性
+Callback ..* AsyncPagedListDiffer
+@enduml

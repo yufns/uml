@@ -66,10 +66,10 @@ abstract class BaseReaderView{
   # void onDraw(Canvss canvas)
   + boolean onTouchEvent(MotionEvent event)
   -- abstract --
-  {abstract} void drawPageContent(Canvas canvas, int pageIndex)
-  {abstract} void onPageEndChanged(int currentPage)
-  {abstract} void onPageStartChange(int requestPage)
-  {abstract} void onPageRequest(int currentPage, int requestPage)
+  {abstract} void drawPageContent(Canvas canvas, int pageIndex)//通过Elements的实现类,实现内容的绘制
+  {abstract} void onPageEndChanged(int currentPage)//翻页结束时的回调
+  {abstract} void onPageStartChange(int requestPage)//翻页开始时的回调
+  {abstract} void onPageRequest(int currentPage, int requestPage)//当Touch事件为Move时,请求翻页时回调
 }
 
 BaseReaderView <|-- BookReaderView
@@ -97,8 +97,8 @@ note bottom:多个element共同负责内容的绘制(头,尾,正文等)
 
 abstract class PageAnimController{
   -- abstract --
-  {abstract} void dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)
-  {abstract} boolean dispatchDrawPage(Canvas canvas, PageCarver pageCarver)
+  {abstract} void dispatchTouchEvent(MotionEvent event, PageCarver pageCarver)//处理翻页效果
+  {abstract} boolean dispatchDrawPage(Canvas canvas, PageCarver pageCarver)//在onDraw调用
   {abstract} void startAnim(int fromIndex, int toIndex, boolean isNext, PageCarver pageCarver)
   {abstract} void stopAnim(PageCarver pageCarver)
   {abstract} boolean isAnimStop();
@@ -110,7 +110,7 @@ abstract class AbsHorGestureAnimController{
   -- abstract --
   {abstract} void onAnimStart(boolean isCancelAnim);
   {abstract} void onAnimEnd(boolean isCancelAnim);
-  {abstract} void onRequestPage(boolean isRequestNext, int fromIndex, int toIndex, float x, float y);
+  {abstract} void onRequestPage(boolean isRequestNext, int fromIndex, int toIndex, float x, float y);//翻页时调用
   {abstract} void onDrawAnim(Canvas canvas, boolean isCancelAnim, boolean isNext, PageCarver pageCarver);
   {abstract} boolean isAnimStop();
   -- Oberride --
