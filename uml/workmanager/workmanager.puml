@@ -1,26 +1,23 @@
 @startuml
-
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+interface Operation
+class OperationImpl
+class Worker
+class WorkRequest
+class Build
+class WorkManager{
+  + WorkContinuation beginUniqueWork(uniqueWorkName,existingWorkPolicy,work)
 }
-
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
+class WorkContinuation{
+  + WorkContinuation then(work)
+  + {abstract} Operation enqueue()
 }
-
+class WorkInfo
+class Constraints
+Build --+ WorkRequest
+Build ..> Constraints
+WorkContinuation ..|> WorkManager
+OperationImpl ..|> Operation
+Operation ..> WorkContinuation
+WorkRequest ..> WorkContinuation
+Worker --o Build
 @enduml
