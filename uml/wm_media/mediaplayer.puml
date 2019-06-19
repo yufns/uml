@@ -1,26 +1,25 @@
 @startuml
+interface StateCallback
+interface TextureManager
+interface Callback
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
 
-List <|-- AbstractList
-Collection <|-- AbstractCollection
+abstract class VideoTouchView
+abstract class VideoView
+abstract class VideoViewImpl
 
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
+abstract class MusicView
+abstract class MusicViewImpl
 
-class ArrayList {
-Object[] elementData
-size()
-}
+abstract class MediaView
+abstract class MediaViewImpl
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
-}
+
+class VideoPlayer
+class MusicPlayer
+
+MediaView ..|> StateCallback
+MediaView ..|> TextureManager
+MediaView ..|> Callback
 
 @enduml

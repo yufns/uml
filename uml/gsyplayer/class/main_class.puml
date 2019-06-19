@@ -5,6 +5,9 @@ abstract GSYVideoView{
   # String mOriginUrl
   # File mCachePath
 }
+abstract GSYVideoBaseManager{
+
+}
 note right : 视频回调与状态处理等相关层;自定义必须实现
 abstract GSYVideoControlView
 note right : 播放UI的显示、控制层、手势处理等;自定义必须实现
@@ -14,6 +17,12 @@ abstract GSYVideoPlayer
 note right : 兼容的空View，目前用于 GSYVideoManager的设置
 class StandardGSYVideoPlayer
 note right : 标准播放器，继承之后实现一些ui显示效果，如显示／隐藏ui，播放按键等
+
+interface IPlayerManager{
+  void setSpeed(float speed, boolean soundTouch)
+  void seekTo(long time)
+}
+note left : 播放器内核管理类
 
 AudioManager --* GSYVideoView
 
@@ -40,12 +49,19 @@ GSYVideoManager <|.. GSYVideoPlayer
 GSYVideoBaseManager <|-- GSYVideoManager
 IPlayerManager --* GSYVideoBaseManager
 ICacheManager --* GSYVideoBaseManager
+GSYVideoViewBridge <|.. GSYVideoBaseManager
 ProxyCacheManager ..|> ICacheManager
 HttpProxyCacheServer --* ProxyCacheManager
 
 
 SystemPlayerManager ..|> IPlayerManager
+IjkPlayerManager ..|> IPlayerManager
+GSYExoPlayerManager ..|> IPlayerManager
+Exo2PlayerManager ..|> IPlayerManager
 AndroidMediaPlayer --* SystemPlayerManager
+IjkMediaPlayer --* IjkPlayerManager
+GSYExo2MediaPlayer --* GSYExoPlayerManager
+IjkExo2MediaPlayer --* Exo2PlayerManager
 
 
 GSYVideoView <|-- GSYVideoControlView
