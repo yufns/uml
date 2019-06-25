@@ -1,11 +1,5 @@
 @startuml
 autonumber
-StandardGSYVideoPlayer -> StandardGSYVideoPlayer : prepareVideo
-StandardGSYVideoPlayer -> GSYVideoView : prepareVideo
-GSYVideoView -> GSYVideoView : startPrepare
-GSYVideoView -> GSYVideoBaseManager : prepare
-GSYVideoView -> MediaHandler : sendMessage
-MediaHandler -> MediaHandler : initVideo(msg)
-MediaHandler -> IMediaPlayer : prepareAsync
+
 
 @enduml

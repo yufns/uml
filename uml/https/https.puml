@@ -1,0 +1,6 @@
+@startuml
+server -> client: 发送证书
+client -> client: 随机值加密
+client -> server : 传输加密后的随机值给server
+server -> server : 使用私钥解密,得到该随机值
+@enduml
