@@ -1,4 +1,7 @@
 @startuml
+interface ICacheAvailableListener{
+  void onCacheAvailable(File cacheFile, String url, int percentsAvailable)
+}
 abstract GSYTextureRenderView
 note right : 绘制View
 abstract GSYVideoView{
@@ -19,6 +22,9 @@ abstract GSYVideoBaseManager{
 
 }
 note right : 视频回调与状态处理等相关层;自定义必须实现
+
+GSYVideoBaseManager ..|> ICacheAvailableListener
+
 abstract GSYVideoControlView{
   --  属性 --
   # GSYVideoProgressListener mGSYVideoProgressListener
@@ -37,8 +43,9 @@ class StandardGSYVideoPlayer
 note right : 标准播放器，继承之后实现一些ui显示效果，如显示／隐藏ui，播放按键等
 
 interface IPlayerManager{
-  void setSpeed(float speed, boolean soundTouch)
-  void seekTo(long time)
+  void setSpeed(float speed, boolean soundTouch)//设置播放速度
+  void seekTo(long time)//滑动
+  void showDisplay(Message msg)//设置渲染控件
 }
 note right : 播放器内核管理类
 
@@ -46,9 +53,7 @@ note right : 播放器内核管理类
 interface GSYVideoViewBridge{
 
 }
-note right : Manager 与 View之间的接口
-
-
+note left : Manager 与 View之间的接口
 
 
 interface GSYMediaPlayerListener{
@@ -91,11 +96,11 @@ class GSYVideoManager{
 }
 
 note right:视频管理单例
-GSYVideoManager -- GSYVideoPlayer
+GSYVideoPlayer -- GSYVideoManager
 GSYVideoBaseManager <|-- GSYVideoManager
 IPlayerManager --* GSYVideoBaseManager
 ICacheManager --* GSYVideoBaseManager
-GSYVideoViewBridge <|.. GSYVideoBaseManager
+GSYVideoBaseManager ..|> GSYVideoViewBridge
 
 ProxyCacheManager ..|> ICacheManager
 HttpProxyCacheServer --* ProxyCacheManager
