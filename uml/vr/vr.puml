@@ -1,0 +1,7 @@
+@startuml
+autonumber
+Launcher -> Game: 启动游戏
+Game --> Game: 游戏时长已到
+Game --> 账号管理 : 充值
+账号管理 --> Game : 继续游戏/退出游戏/继续充值
+@enduml
