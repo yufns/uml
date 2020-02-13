@@ -1,0 +1,11 @@
+@startuml
+Unity -> Android: 开启DLNA服务
+Android --> Android: 创建服务
+Android --> Android: 查询设备
+Android --> Unity : 返回设备列表
+Android --> Unity : 返回连接信息
+Unity --> Android : 选中设备
+Unity --> Android : 开启同屏
+Android --> Android : 执行同屏服务
+Unity --> Android : 关闭服务
+@enduml

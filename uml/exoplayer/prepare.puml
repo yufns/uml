@@ -1,0 +1,51 @@
+@startuml
+autonumber
+PlayerActivity -> SimpleExoPlayer: prepare
+SimpleExoPlayer -> ExoPlayerImplInternal:prepare
+ExoPlayerImplInternal -> HandlerWrapper:sendToTarget
+HandlerWrapper -> ExoPlayerImplInternal:prepareInternal
+group prepareInternal
+ExoPlayerImplInternal -> ExoPlayerImplInternal:resetInternal
+ExoPlayerImplInternal -> DefaultLoadControl:onPrepared
+  group onPrepared
+  DefaultLoadControl -> DefaultAllocator:reset
+  end
+ExoPlayerImplInternal -> DashMediaSource:prepareSource
+  group prepareSource
+  DashMediaSource -> BaseMediaSource:prepareSource
+  BaseMediaSource -> DashMediaSource:prepareSourceInternal
+    group prepareSourceInternal
+    DashMediaSource -> DrmSessionManager:prepare
+      alt sideloadedManifest
+      DashMediaSource -> DashMediaSource:processManifest
+      else
+      DashMediaSource -> CacheDataSourceFactory:createDataSource
+      CacheDataSourceFactory -> DashMediaSource:CacheDataSource
+      DashMediaSource -> DashMediaSource:startLoadingManifest
+      end
+    end
+  end
+ExoPlayerImplInternal -> HandlerWrapper:sendEmptyMessage(MSG_DO_SOME_WORK)
+HandlerWrapper -> ExoPlayerImplInternal:doSomeWork()
+  group doSomeWork
+  ExoPlayerImplInternal -> ExoPlayerImplInternal:updatePeriods()
+  ExoPlayerImplInternal -> MediaPeriodQueue:getPlayingPeriod()
+  MediaPeriodQueue -> ExoPlayerImplInternal:MediaPeriodHolder
+  alt MediaPeriodHolder == null
+  ExoPlayerImplInternal -> ExoPlayerImplInternal:scheduleNextWork
+  end
+  ExoPlayerImplInternal -> ExoPlayerImplInternal:updatePlaybackPositions
+
+  alt playingPeriodHolder.prepared == true
+  ExoPlayerImplInternal -> DashMediaPeriod:discardBuffer
+  ExoPlayerImplInternal -> MediaCodecVideoRenderer:render
+  ExoPlayerImplInternal -> MediaCodecAudioRenderer:render
+    alt 可以开始渲染
+      ExoPlayerImplInternal ->ExoPlayerImplInternal : startRenderers();
+    else
+      ExoPlayerImplInternal ->ExoPlayerImplInternal : stopRenderers();
+    end
+  end
+  end
+end
+@enduml

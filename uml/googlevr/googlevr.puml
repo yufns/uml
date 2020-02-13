@@ -1,0 +1,40 @@
+@startuml
+class MonoscopicView{
++ void initialize(VideoUiView uiView)
++ void loadMedia(Intent intent)
+}
+
+class GLSurfaceView{
+
+}
+
+interface Renderer{
+  void onSurfaceCreated(GL10 gl, EGLConfig config);
+  void onSurfaceChanged(GL10 gl, int width, int height);
+  void onDrawFrame(GL10 gl);
+}
+
+GLSurfaceView +-- Renderer
+
+class VideoUiView{
+
+}
+
+class MediaLoader{
+
+}
+
+class TouchTracker{
+
+}
+
+class Renderer2 {
+}
+Renderer <|.. Renderer2
+MediaLoader --* MonoscopicView
+TouchTracker --* MonoscopicView
+Renderer2 --* MonoscopicView
+VideoUiView --o MonoscopicView
+
+
+@enduml

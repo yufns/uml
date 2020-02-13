@@ -1,0 +1,210 @@
+@startuml
+
+interface Player{
+    void setPlayWhenReady(boolean playWhenReady);
+    void setVideoSurface(Surface surface);
+}
+
+
+interface PlayerEventListener{
+
+}
+
+interface ExoPlayer{
+  void prepare(MediaSource mediaSource);
+}
+
+abstract class BasePlayer{
+
+}
+
+
+class SimpleExoPlayer {
+  - BandwidthMeter bandwidthMeter;
+  - AnalyticsCollector analyticsCollector;
+  - ComponentListener analyticsCollector;
+  - ExoPlayerImpl player;
+  # Renderer[] renderers;
+}
+
+
+interface AudioComponent{
+
+}
+
+interface VideoComponent{
+
+}
+
+interface TextComponent{
+
+}
+
+interface MetadataComponent{
+
+}
+
+class ExoPlayerBuilder {
+
+}
+
+class SimpleExoPlayerBuilder{
+
+}
+
+interface HandlerCallback{
+  boolean handleMessage(@NonNull Message msg);
+}
+
+note left:消息回调
+
+
+class ExoPlayerImpl{
+  - ExoPlayerImplInternal internalPlayer;
+}
+note left:SimpleExoPlayer成员变量,播放功能由它来实现
+
+
+class AnalyticsCollector{
+
+}
+note left:播放的事件监听
+
+interface MediaSource{
+  void addEventListener(Handler handler, MediaSourceEventListener eventListener);
+  void removeEventListener(MediaSourceEventListener eventListener);
+  default Object getTag()
+  void prepareSource(MediaSourceCaller caller, @Nullable TransferListener mediaTransferListener);
+  void maybeThrowSourceInfoRefreshError() throws IOException;
+  void enable(MediaSourceCaller caller);
+  MediaPeriod createPeriod(MediaPeriodId id, Allocator allocator, long startPositionUs);
+  void releasePeriod(MediaPeriod mediaPeriod);
+  void disable(MediaSourceCaller caller);
+  void releaseSource(MediaSourceCaller caller);
+}
+
+interface DataSource{
+  void addTransferListener(TransferListener transferListener);
+  long open(DataSpec dataSpec) throws IOException;
+  int read(byte[] buffer, int offset, int readLength) throws IOException;
+  Uri getUri();
+  default Map<String, List<String>> getResponseHeaders()
+  void close() throws IOException;
+}
+
+interface DataSourceFactory{
+  DataSource createDataSource()
+}
+
+abstract class BaseMediaSource{
+  # {abstract} void prepareSourceInternal(@Nullable TransferListener mediaTransferListener);
+  # {abstract} void releaseSourceInternal();
+}
+
+class DashMediaSource{
+  + DashMediaSource createMediaSource(Uri manifestUri)//根据uri生成MediaSource,包含如何解析Dash协议的逻辑
+}
+note left:dash播放,资源处理类
+
+
+class DashMediaSourceFactory{
+
+}
+
+interface MediaSourceCaller{
+
+}
+
+class DefaultDataSourceFactory{
+
+}
+
+interface DrmSessionManager{
+
+}
+class DefaultDrmSessionManager{
+
+}
+
+class ExoPlayerImplInternal{
+  - void handlePeriodPrepared(MediaPeriod mediaPeriod)//准备就绪,可以开始播放
+}
+
+
+interface MediaPeriodCallback{
+  void onPrepared(MediaPeriod mediaPeriod)
+}
+
+interface MediaSourceCaller{
+
+}
+
+interface MediaPeriod{
+
+}
+
+class DashMediaPeriod{
+
+}
+note left:数据获取相关的类
+
+interface SequenceableLoader{
+
+}
+
+interface LoadControl{
+
+}
+
+class DefaultLoadControl{
+
+}
+
+
+interface Renderer{
+
+}
+
+abstract BaseRenderer{
+
+}
+
+
+
+
+
+DataSource +-- DataSourceFactory
+ExoPlayer +-- ExoPlayerBuilder
+SimpleExoPlayer +-- SimpleExoPlayerBuilder
+Player +-- PlayerEventListener
+DashMediaSource +-- DashMediaSourceFactory
+
+Factory <|.. DefaultDataSourceFactory
+ExoPlayer <|.. SimpleExoPlayer
+ExoPlayer <|.. ExoPlayerImpl
+Player <|.. BasePlayer
+MediaSource <|.. BaseMediaSource
+AudioComponent <|.. SimpleExoPlayer
+VideoComponent <|.. SimpleExoPlayer
+TextComponent <|.. SimpleExoPlayer
+MetadataComponent <|.. SimpleExoPlayer
+DrmSessionManager <|.. DefaultDrmSessionManager
+HandlerCallback <|.. ExoPlayerImplInternal
+MediaPeriodCallback <|.. ExoPlayerImplInternal
+MediaPeriod <|.. DashMediaPeriod
+LoadControl <|.. DefaultLoadControl
+
+BaseMediaSource <|-- DashMediaSource
+BasePlayer <|-- SimpleExoPlayer
+BasePlayer <|-- ExoPlayerImpl
+SequenceableLoader <|-- MediaPeriod
+Renderer <|-- BaseRenderer
+
+SimpleExoPlayer *.. ExoPlayerImpl
+SimpleExoPlayer *.. AnalyticsCollector
+SimpleExoPlayer *.. DefaultDrmSessionManager
+ExoPlayerImpl *.. DashMediaSource
+ExoPlayerImpl *.. ExoPlayerImplInternal
+
+ExoPlayerImplInternal -- MediaPeriod
+@enduml

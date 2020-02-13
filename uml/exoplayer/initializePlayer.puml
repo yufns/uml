@@ -1,0 +1,34 @@
+@startuml
+autonumber
+PlayerActivity -> PlayerActivity : createTopLevelMediaSource
+return DashMediaSource
+alt abrAlgorithm
+PlayerActivity -> AdaptiveTrackSelection.Factory:Factory()
+return AdaptiveTrackSelection
+else
+PlayerActivity -> RandomTrackSelection.Factory:Factory()
+return RandomTrackSelection
+end
+PlayerActivity -> DemoApplication :buildRenderersFactory()
+return DefaultRenderersFactory
+
+PlayerActivity -> DefaultTrackSelector:DefaultTrackSelector(RandomTrackSelection/AdaptiveTrackSelection)
+return DefaultTrackSelector
+DefaultTrackSelector -> DefaultTrackSelector : setParameters
+PlayerActivity -> SimpleExoPlayer.Builder : setTrackSelector(DefaultTrackSelector)
+PlayerActivity -> SimpleExoPlayer.Builder : build()
+return SimpleExoPlayer
+PlayerActivity -> SimpleExoPlayer :addListener
+PlayerActivity -> SimpleExoPlayer :setPlayWhenReady
+PlayerActivity -> SimpleExoPlayer :addAnalyticsListener
+PlayerActivity -> PlayerView :setPlayer()
+PlayerActivity -> PlayerView :setPlaybackPreparer()
+alt adsLoader
+PlayerActivity -> AdsLoader :setPlayer()
+end
+
+alt haveStartPosition
+PlayerActivity -> SimpleExoPlayer : seekTo()
+PlayerActivity -> SimpleExoPlayer : prepare()
+end
+@enduml

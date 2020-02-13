@@ -1,0 +1,41 @@
+@startuml
+LoginViewController -> PicoUtils: postLogin
+PicoUtils -> NetPost : postLogin
+...
+alt 强制登录
+NetPost --> PicoUtils : setForceLogin
+else 登录成功
+  group 登录成功case
+  group postLoginSuccess
+  NetPost --> PicoUtils : postLoginSuccess
+  PicoUtils --> PicoUtils : writeToken
+  PicoUtils --> PicoUtils : postLninfo
+  PicoUtils --> NetPost : postlninfo
+  end
+  NetPost --> NetPost : postlninfoall
+    alt 登录失败
+    NetPost --> PicoUtils : postErro
+    else token校验失败
+    NetPost --> PicoUtils : CheckTokenFailue
+    else 登录华为
+      group 登录华为游戏
+        NetPost --> PicoUtils : LoginHUWAI
+        PicoUtils --> Login : LoginHWGame
+        ...
+        Login --> PicoUtils : setGameLoginHuawei
+        PicoUtils --> PicoUtils : postGamelogin
+        group postGamelogin
+          PicoUtils --> NetPost : postGamelogin
+          ...
+          alt 登录成功
+          NetPost --> PicoUtils:GameloginInfo
+          else 登录失败
+          NetPost --> PicoUtils:postErro
+        end
+    end
+  end
+
+else 登录失败
+NetPost --> PicoUtils : postErro
+end
+@enduml
