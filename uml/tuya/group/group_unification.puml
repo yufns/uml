@@ -1,27 +1,39 @@
 @startuml
 'https://plantuml.com/class-diagram
+autonumber
+== 1.初始化 ==
+IMeshGroupDeviceListView -> IMeshGroupListPresenter : Presenter初始化
+IMeshGroupListPresenter -> IMeshGroupListPresenter : IGroupModel创建
+== 2.查询数据 ==
+IMeshGroupListPresenter -> IGroupModel : 查询数据
+alt 没有群组
+    group queryDevices
+        IMeshGroupListPresenter -> IGroupModel : queryDevices
+        IMeshGroupListPresenter -> IMeshGroupDeviceListView: 更新ui
+    end
+else 已有群组
+    group queryDevicesByGroup
+        IMeshGroupListPresenter -> IGroupModel : queryDevicesByGroup
+        IMeshGroupListPresenter -> IMeshGroupDeviceListView: 更新ui
+    end
+end
+== 3.编辑设备 ==
+alt 已添加
+IMeshGroupDeviceListView -> IMeshGroupDeviceListView : remove删除设备
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
+else 待添加
+IMeshGroupDeviceListView -> IMeshGroupDeviceListView : add添加设备
+end
+== 4.保存群组 ==
+IMeshGroupDeviceListView -> IMeshGroupListPresenter : doConfirm(设备信息)
+alt 没有创建群组
+    IMeshGroupListPresenter -> IGroupModel : 创建群组
+end
 
-List <|-- AbstractList
-Collection <|-- AbstractCollection
+group 保存群组信息
+    IMeshGroupListPresenter -> IGroupModel : saveGroup
+end
 
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
-}
-
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
-}
+IMeshGroupListPresenter -> IMeshGroupDeviceListView : 显示结果
 
 @enduml

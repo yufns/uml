@@ -1,0 +1,11 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+interface IMeshGroupListPresenter{
+    void onClickSelect(int actionType, GroupDeviceDetailBean bean);//选中
+    void doConfirm();//确定保存
+    void doBack();//返回
+    void onDestroy();
+}
+@enduml
