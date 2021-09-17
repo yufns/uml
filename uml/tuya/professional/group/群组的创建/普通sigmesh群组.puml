@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+== 创建localId ==
+participant SigMeshGroupListPresenter order 1
+participant SigMeshModel order 2
+participant BluemeshBusiness order 3
+participant TuyaSigMeshDevice order 4
+participant 云端 order 10000
+SigMeshGroupListPresenter -> SigMeshModel : 传入meshId
+SigMeshModel -> BluemeshBusiness : 1：传入meshId和type，发起网络请求\n2：type用于区分sigmesh和私有mesh
+BluemeshBusiness -> 云端 : 调用云端接口"tuya.m.device.ble.mesh.local.id.alloc"
+== 添加设备 ==
+SigMeshModel -> TuyaSigMeshDevice : addGroup
+@enduml

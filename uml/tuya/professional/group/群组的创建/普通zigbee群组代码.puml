@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+autonumber
+participant CommonPresenter order 1
+participant CommonModel order 2
+participant GroupModel order 3
+participant Server order 1000
+participant TuyaZigbeeGroup order 4
+participant TuyaZigbeeGroupMonitorManager order 5
+participant DevCloudControlImpl order 6
+participant MqttcontrolModel order 7
+== 创建一个空群组 ==
+CommonPresenter -> CommonModel: createGroup
+CommonModel -> GroupModel: createZigbeeEmptyGroup
+GroupModel -> Server: 调用tuya.m.device.group.add.zigbee接口
+GroupModel <-- Server: 1:保存缓存 \n2:返回localId和GroupId\n3:发送GroupUpdateEventModel消息，通知群组创建
+CommonModel <-- GroupModel: 1:发送GroupUpdateEventModel消息\n2:又加了一次缓存
+== 将设备加入到群组 ==
+CommonModel --> TuyaZigbeeGroupMonitorManager: 1:设置超时\n2:注册mqtt 203号协议\n3:将设备devIds转成cids
+TuyaZigbeeGroupMonitorManager --> DevCloudControlImpl:1：调用groupAdd方法走mqtt协议添加设备
+DevCloudControlImpl --> MqttcontrolModel:1:调用publish方法，通过mqtt协议将指令发出
+
+@enduml

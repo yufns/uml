@@ -1,0 +1,15 @@
+@startuml
+'https://plantuml.com/class-diagram
+autonumber
+MeshLocalGroupListPresenter -> RemoteControlMeshModel
+alt 含有pccList或CodeList
+RemoteControlMeshModel -> MeshGroupDeviceListModel : 调用云端接口，查询当前meshId下的设备
+
+else 本地查询
+
+RemoteControlMeshModel -> ITuyaBlueMeshGroup : 调用queryDeviceInGroupByLocal接口，查询本地设备信息
+
+end
+
+
+@enduml

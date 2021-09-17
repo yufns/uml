@@ -1,0 +1,13 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant App
+participant 网关
+participant 路由器
+
+网关 -> 路由器: 网关连接到路由器
+App -> 网关: 将网关添加到app
+App -> 云端:查找支持加入当前网关的所有设备，并与网关同组一个群组
+
+@enduml

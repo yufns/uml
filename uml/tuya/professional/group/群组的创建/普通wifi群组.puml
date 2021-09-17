@@ -1,0 +1,15 @@
+@startuml
+autonumber
+participant CommonPresenter order 1
+participant CommonModel order 2
+participant GroupModel order 3
+participant Server order 4
+
+CommonPresenter -> CommonModel :
+CommonModel -> GroupModel : 调用createNewGroup
+GroupModel -> Server : 1:请求云端接口"s.m.dev.group.add"
+GroupModel <-- Server : 1:将创建成功后的群组数据保存到缓存中\n2:发出GroupUpdateEventModel消息
+CommonModel <-- GroupModel : 返回groupId
+CommonPresenter <-- CommonModel : 返回groupId
+
+@enduml

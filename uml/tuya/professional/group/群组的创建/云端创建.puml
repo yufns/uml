@@ -1,0 +1,14 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+App -> 云端 : 将设备信息发送给云端
+云端 --> App : 建立群组，并返回一个groupId
+App -> 云端 : 向云端发送控制指令
+云端 -> 设备 :
+
+
+
+
+@enduml

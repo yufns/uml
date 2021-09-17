@@ -1,0 +1,94 @@
+@startuml
+
+alt 普通wifi
+== 查询设备 ==
+    group group-ui
+    CommonModel -> ITuyaHome : 通过TyGroupCoreKit.queryDeviceListToAddGroup方法
+    end
+
+    group homelib
+    ITuyaHome -> HomeKitModel : 调用HomeKitModel.getGroupDeviceList
+    HomeKitModel -> ITuyaGroupModel
+    end
+
+    group device
+    ITuyaGroupModel -> GroupBusiness : 调用s.m.dev.group.add.dev.list.2.0
+    end
+== 创建群组 ==
+    group group-ui
+    CommonModel -> ITuyaHome : createGroup
+    ITuyaHome -> CommonModel : createGroup
+    end
+
+    group homelib
+    ITuyaHome -> HomeKitModel : createNewGroup
+    HomeKitModel -> ITuyaGroupModel : createNewGroup
+    end
+
+    group device
+    ITuyaGroupModel -> GroupBusiness : 调用云端接口s.m.dev.group.add.2.1
+    GroupBusiness -> ITuyaGroupModel : 1:将群组放入缓存TuyaGroupCache \n 2:发送一个GroupUpdateEventModel消息 \n 3:返回群组id
+    end
+
+== 编辑群组 ==
+    group group-ui
+    CommonModel -> ITuyaGroup : 调用TuyaGroupManager.updateDeviceList方法
+    CommonModel <-- ITuyaGroup : 返回localId和groupId,然后设备添加
+    end
+
+    group device
+    ITuyaGroup -> ITuyaGroupModel : 1:调用成员变量mTuyaGroup的updateDeviceList
+    ITuyaGroup <-- ITuyaGroupModel : 只返回保存成功或失败
+    ITuyaGroupModel -> RelationBusiness : 调用远端接口tuya.m.device.relations.selected.save_1.0
+    ITuyaGroupModel <-- RelationBusiness : 保存成功,并缓存群组信息SmartCacheManager
+    end
+
+else 普通zigbee或者433
+== 查询设备 ==
+    group group-ui
+        CommonModel -> ITuyaHome : 通过TyGroupCoreKit.queryZigbeeDeviceListToAddGroup
+        ITuyaHome -> CommonModel : 1.将GroupDeviceBean转成GroupDeviceDetailBean
+    end
+
+    group homelib
+        ITuyaHome -> HomeKitModel : 调用HomeKitModel.getZigbeeGroupDeviceList
+        HomeKitModel -> ITuyaHome : 直接返回
+        HomeKitModel -> ITuyaGroupModel : 调用ITuyaGroupModel.getZigbeeGroupDeviceList
+        ITuyaGroupModel -> HomeKitModel : 直接返回
+    end
+
+    group device
+        ITuyaGroupModel -> GroupBusiness : GroupBusiness.queryZigbeeDevicesByProductId
+        GroupBusiness -> 云端 : 调用s.m.dev.group.add.dev.list.3.0
+        云端 -> ITuyaGroupModel : 1.将云端数据GroupDeviceRespBean转成GroupDeviceBean\n2.手动将设备设置为在线
+    end
+== 创建群组 ==
+
+    group group-ui
+    CommonModel -> ITuyaHome : 调用ITuyaHome.createZigbeeGroup接口创建
+    end
+
+    group homelib
+    ITuyaHome -> HomeKitModel:调用createZigbeeEmptyGroup创建一个空的zigbee群组
+    end
+
+    group device
+    HomeKitModel -> ITuyaGroupModel : 调用GroupModel创建空zigbee群组
+    ITuyaGroupModel -> GroupBusiness : 1:调用 tuya.m.device.group.add.zigbee
+    ITuyaGroupModel <-- GroupBusiness : 1:缓存群组消息 \n 2:发送创建群组消息  \n 3:zigbee群组创建后会返回localId,groupId
+    end
+== 编辑群组 ==
+
+else 标准zigbee
+== 查询设备 ==
+    group group-ui
+    CommonModel -> GroupStandardWifiDeviceListModel : 通过标准wifi model来查询设备
+    GroupStandardWifiDeviceListModel -> StandardBusiness:调用云端查询数据 \ntuya.m.device.group.standard.dev.list_1.1
+    GroupStandardWifiDeviceListModel -> CommonModel : 将GroupDeviceDetailBean转成GroupDeviceBean
+    end
+
+== 创建群组 ==
+== 编辑群组 ==
+
+end
+@enduml
