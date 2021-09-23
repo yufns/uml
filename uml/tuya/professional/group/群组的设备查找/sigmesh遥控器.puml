@@ -10,6 +10,4 @@ else 本地查询
 RemoteControlMeshModel -> ITuyaBlueMeshGroup : 调用queryDeviceInGroupByLocal接口，查询本地设备信息
 
 end
-
-
 @enduml

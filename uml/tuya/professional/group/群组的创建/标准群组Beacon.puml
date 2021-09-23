@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant BeaconModel order 10
+participant GroupModel order 20
+participant MeshGroupDeviceListModel order 30
+participant TuyaGroupManager order 40
+participant TuyaBeaconGroup order 50
+participant 云端 order 1000
+
+== 生成groupId createGroup ==
+BeaconModel -> GroupModel : 调用GroupModel的createCommonGroup
+GroupModel -> 云端:调用"tuya.m.device.group.common.add"创建群组
+GroupModel <-- 云端:1:缓存当前群组信息\n2:发送群组创建通知
+== 保存设备saveGroup ==
+
+GroupModel -> MeshGroupDeviceListModel:操作添加设备到群组
+MeshGroupDeviceListModel -> TuyaGroupManager:最终调用ITuyaGroup的子类addDevice方法
+TuyaGroupManager -> TuyaGroupManager:添加设备的入口管理类，由内部成员添加设备
+TuyaGroupManager -> TuyaBeaconGroup:最终调用TuyaBeaconGroup的addDevice方法
+
+@enduml

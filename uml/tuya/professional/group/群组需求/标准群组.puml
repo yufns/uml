@@ -1,5 +1,9 @@
 @startuml
-
+participant CommonModel order 10
+participant ITuyaHome order 20
+participant HomeKitModel order 30
+participant ITuyaGroupModel order 40
+participant GroupBusiness order 1000
 alt 普通wifi
 == 查询设备 ==
     group group-ui

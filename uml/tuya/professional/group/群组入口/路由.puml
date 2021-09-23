@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant TuyaGrupManager order 10
+participant GroupManagerService order 20
+participant GroupManagerImpl order 21
+participant RouterUtils order 30
+participant GroupModuleApp order 40
+participant GroupListActivity order 50
+TuyaGrupManager -> GroupManagerService : 入参类型1:设备id,2:groupId
+GroupManagerService -> GroupManagerImpl : 交给服务的实例对象解析
+GroupManagerImpl -> RouterUtils : 讲外部参数解析成路由信息
+RouterUtils -> GroupModuleApp : 路由跳转
+GroupModuleApp -> GroupListActivity  : 路由跳转
+@enduml

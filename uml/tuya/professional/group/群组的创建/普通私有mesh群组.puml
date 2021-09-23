@@ -2,15 +2,35 @@
 'https://plantuml.com/sequence-diagram
 
 autonumber
+
+participant MeshGroupListPresenter order 10
+participant MeshModel order 20
+participant MeshGroupDeviceListModel order 30
+participant BluemeshBusiness order 40
+participant TuyaBlueMeshDevice order 50
+participant TuyaCloudBlueMeshDevice order 60
+participant 云端 order 1000
+
+
+
 == 创建localId ==
-participant MeshGroupListPresenter order 1
-participant MeshModel order 2
-participant BluemeshBusiness order 3
-participant TuyaBlueMeshDevice order 4
-participant 云端 order 100
 MeshGroupListPresenter -> MeshModel : 传入meshId
-MeshModel -> BluemeshBusiness : 1：传入meshId和type，发起网络请求\n2：type用于区分sigmesh和私有mesh
+MeshModel -> MeshGroupDeviceListModel : 调用getEnableGroupId，type为0
+MeshGroupDeviceListModel -> BluemeshBusiness : 1：传入meshId和type，发起网络请求\n2：type用于区分sigmesh和私有mesh
 BluemeshBusiness -> 云端 : 调用云端接口"tuya.m.device.ble.mesh.local.id.alloc"
+BluemeshBusiness <-- 云端 : return localId
+MeshGroupDeviceListModel <-- BluemeshBusiness : return localId
+MeshModel <-- MeshGroupDeviceListModel : return localId
+
+== 创建groupId ==
+MeshModel -> TuyaBlueMeshDevice : 创建groupId
+TuyaBlueMeshDevice -> TuyaCloudBlueMeshDevice : 1：删除已经存在的目标group（历史缓存）\n2:创建新的群组
+TuyaCloudBlueMeshDevice -> 云端 : 1：请求云端接口"tuya.m.device.group.add"，创建groupId\n2:将群组添加到当前mesh下
+TuyaCloudBlueMeshDevice <-- 云端 : groupId
+TuyaBlueMeshDevice <-- TuyaCloudBlueMeshDevice : groupId
+MeshModel <-- TuyaBlueMeshDevice : groupId
+
 == 添加设备 ==
-MeshModel -> TuyaBlueMeshDevice : addGroup
+MeshModel -> MeshModel:saveGroup
+
 @enduml
