@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant StandardWifiListPresenter order 10
+participant StandardWifiModel order 11
+participant GroupStandardWifiDeviceListModel order 20
+participant TuyaWifiGroup order 30
+participant TuyaWifiGroupMonitorManager order 40
+participant 云端 order 40
+StandardWifiListPresenter -> StandardWifiModel
+StandardWifiModel -> GroupStandardWifiDeviceListModel
+GroupStandardWifiDeviceListModel -> TuyaWifiGroup
+TuyaWifiGroup -> TuyaWifiGroupMonitorManager
+TuyaWifiGroupMonitorManager -> 云端
+@enduml

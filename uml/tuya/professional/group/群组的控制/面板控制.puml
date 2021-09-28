@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant TYRCTSmartPanelActivity order 10
+participant TYReactFragment order 20
+
+TYRCTSmartPanelActivity -> TYReactFragment
+@enduml
