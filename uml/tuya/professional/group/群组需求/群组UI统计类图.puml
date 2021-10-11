@@ -1,0 +1,51 @@
+@startuml
+
+package groupPresenter{
+    interface IGroupListPresenter
+    interface IGroupManagerPresenter
+    class AbstractPresenter
+}
+package subPresenter{
+   class BeaconGroupListPresenter
+   class CommonPresenter
+   class MeshGroupListPresenter
+   class MeshLocalGroupListPresenter
+   class SigMeshGroupListPresenter
+   class StandardSigMeshPresenter
+   class StandardWifiListPresenter
+   class ZigbeeControllerGroupPresenter
+}
+
+interface IGroupListView{
+    void setGroupTitle(String title);
+    void loadStart();
+    void loadFinish();
+    void updateAddDeviceList(List<GroupDeviceDetailBean> addBeanList, List<GroupDeviceDetailBean> beAddedBeanList);
+    List<GroupDeviceDetailBean> getAddedDeviceList();
+    List<GroupDeviceDetailBean> getBeAddedDeviceList();
+    void finishActivity();
+}
+
+interface IGroupListPresenter{
+    void doConfirm();
+    void onDestroy();
+}
+
+interface IGroupManagerPresenter{
+     {method} fun processInitData() : GroupInitData<IGroupModel,GroupBuilder,GroupBean,DeviceBean,GroupType>?
+     {method} fun queryDevices()
+}
+
+abstract class AbstractPresenter{
+    {method} {abstract} fun isChecked(groupBean : GroupDeviceDetailBean,devId :String) : Boolean
+    {method} {abstract} fun getLoadingLayout(): Int
+    {method} {abstract} fun processCreateGroupSuccess(result: IGroupResult?)
+    {method} {abstract} fun processSaveGroupSuccess(result: IGroupResult?)
+    {method} {abstract} fun doLast(isOpenPanel: Boolean,groupId:Long)
+}
+AbstractPresenter ..|> IGroupListPresenter
+AbstractPresenter ..|> IGroupManagerPresenter
+AbstractPresenter <--> IGroupListView
+subPresenter --|> groupPresenter
+
+@enduml

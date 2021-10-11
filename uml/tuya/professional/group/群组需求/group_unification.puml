@@ -2,38 +2,31 @@
 'https://plantuml.com/class-diagram
 autonumber
 == 1.初始化 ==
-IMeshGroupDeviceListView -> IMeshGroupListPresenter : Presenter初始化
-IMeshGroupListPresenter -> IMeshGroupListPresenter : IGroupModel创建
+IGroupListView -> IGroupManagerPresenter : Presenter初始化
+IGroupManagerPresenter -> IGroupModel : IGroupModel初始化
 == 2.查询数据 ==
-IMeshGroupListPresenter -> IGroupModel : 查询数据
+IGroupManagerPresenter -> IGroupModel : 查询数据
 alt 没有群组
-    group queryDevices
-        IMeshGroupListPresenter -> IGroupModel : queryDevices
-        IMeshGroupListPresenter -> IMeshGroupDeviceListView: 更新ui
-    end
+    IGroupManagerPresenter -> IGroupModel : queryDevices
 else 已有群组
-    group queryDevicesByGroup
-        IMeshGroupListPresenter -> IGroupModel : queryDevicesByGroup
-        IMeshGroupListPresenter -> IMeshGroupDeviceListView: 更新ui
-    end
+    IGroupManagerPresenter -> IGroupModel : queryDevicesByGroup
 end
+IGroupManagerPresenter <-- IGroupModel : 返回deviceList
+IGroupListView <-- IGroupManagerPresenter: 更新ui
+
 == 3.编辑设备 ==
 alt 已添加
-IMeshGroupDeviceListView -> IMeshGroupDeviceListView : remove删除设备
-
+IGroupListView -> IGroupListView : remove删除设备
 else 待添加
-IMeshGroupDeviceListView -> IMeshGroupDeviceListView : add添加设备
+IGroupListView -> IGroupListView : add添加设备
 end
 == 4.保存群组 ==
-IMeshGroupDeviceListView -> IMeshGroupListPresenter : doConfirm(设备信息)
+IGroupListView -> IGroupManagerPresenter : doConfirm(设备信息)
 alt 没有创建群组
-    IMeshGroupListPresenter -> IGroupModel : 创建群组
+    IGroupManagerPresenter -> IGroupModel : 创建群组
+else 保存群组信息
+    IGroupManagerPresenter -> IGroupModel : saveGroup
 end
-
-group 保存群组信息
-    IMeshGroupListPresenter -> IGroupModel : saveGroup
-end
-
-IMeshGroupListPresenter -> IMeshGroupDeviceListView : 显示结果
-
+IGroupManagerPresenter <-- IGroupModel : 返回结果
+IGroupManagerPresenter -> IGroupListView : 显示结果
 @enduml

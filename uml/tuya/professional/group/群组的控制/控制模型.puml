@@ -1,0 +1,28 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+participant RN面板 order 10
+participant 涂鸦智能App order 20
+
+participant Mesh节点 order 30
+
+participant MQTT服务器 order 41
+participant 网关 order 41
+participant 网关子设备 order 42
+
+participant HTTP服务器 order 50
+participant 网络子设备 order 51
+
+RN面板 -> 涂鸦智能App : 发送控制\n指令给APP
+alt 走本地局域网（本地蓝牙）
+    涂鸦智能App -> Mesh节点 : 发送指令\n给某个节点
+else 网关（设备不具有联网能力，挂在网关下）
+    涂鸦智能App -> MQTT服务器 : 发送指令给\nMQTT服务器
+    MQTT服务器 -> 网关: 将指令转\n发给网关
+    网关 -> 网关子设备 : 将指令发送给挂\n在网关下的子设备
+else 云端（设备具有联网能力）
+    涂鸦智能App -> HTTP服务器 : 将指令发送\n发送给服务器
+    HTTP服务器 -> 网络子设备 : 将指令发送\n发送给子设备
+end
+@enduml

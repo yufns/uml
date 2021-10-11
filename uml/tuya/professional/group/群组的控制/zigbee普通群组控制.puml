@@ -1,0 +1,20 @@
+@startuml
+autonumber
+participant RN面板 order 10
+participant Android业务端 order 20
+participant SDK order 30
+participant HTTP服务器 order 40
+participant MQTT服务器 order 41
+RN面板 -> Android业务端 : 传递控制指令
+Android业务端 -> SDK : 由SDK层去执行控制逻辑
+alt http
+SDK -> HTTP服务器 : 调用云端接口,执行控制
+HTTP服务器 --> SDK : 返回response
+
+else mqtt
+SDK -> MQTT服务器 : 发送消息给MQTT服务器
+MQTT服务器 --> SDK : 服务器发送消息给SDK层
+end
+SDK --> Android业务端 : 通过callback回调结果
+Android业务端 --> RN面板 : 发送结果信息给RN页面
+@enduml
