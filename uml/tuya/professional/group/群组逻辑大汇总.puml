@@ -1,0 +1,88 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+box 群组类型
+participant Presenter order 10 #88dddd
+end box
+
+box groupUseCase #66b2ff
+participant Model order 20 #88dddd
+end box
+
+box homelib #ffb366
+participant TuyaHome order 30 #88dddd
+participant HomeKitModel order 31 #88dddd
+participant TuyaHomeDataManager order 32 #88dddd
+participant TuyaHomeRelationCacheManager order 33 #88dddd
+end box
+
+
+box device #8c66ff
+participant GroupModel order 40 #88dddd
+participant TuyaWifiGroup order 41 #88dddd
+end box
+
+box device #0000ff
+participant 云端 order 1000 #88dddd
+end box
+
+
+
+skinparam maxMessageSize 20
+== 普通wifi群组设备查找 ==
+Presenter -> Model : groupId productId deviceId
+Model -> TuyaHome : groupId productId
+TuyaHome -> HomeKitModel : groupId productId
+HomeKitModel -> GroupModel : groupId productId homeId
+GroupModel -> 云端 : groupId productId homeId
+
+
+autonumber
+== 普通zigbee群组设备查找 ==
+Presenter -> Model : groupId productId deviceId
+Model -> TuyaHome : groupId productId
+TuyaHome -> HomeKitModel : groupId productId
+HomeKitModel -> GroupModel : groupId productId homeId
+GroupModel -> 云端 : groupId productId homeId
+
+autonumber
+== Beacon设备查找 ==
+Presenter -> Model : groupId productId deviceId
+Model -> TuyaHomeDataManager : 空
+Model -> TuyaHomeRelationCacheManager : homeId
+TuyaHomeRelationCacheManager --> TuyaHomeDataManager : deviceList
+TuyaHomeDataManager --> Model : deviceList
+Model -> Model : 过滤
+
+autonumber
+== 普通Mesh 普通SigMesh设备查找 ==
+Presenter -> Model : groupId deviceId vendorId meshId
+Model -> TuyaHome : meshId
+TuyaHomeDataManager -> TuyaHomeRelationCacheManager : meshId
+TuyaHomeRelationCacheManager --> TuyaHomeDataManager : deviceList
+TuyaHomeDataManager --> TuyaHome : deviceList
+TuyaHome --> Model : deviceList
+Model -> Model : 过滤
+
+
+autonumber
+== 标准SigMesh设备查找 ==
+Presenter -> Model : groupId deviceId vendorId meshId productId
+Model -> TuyaWifiGroup : homeId productId groupId
+TuyaWifiGroup -> 云端 : homeId productId groupId
+
+
+autonumber
+== 标准wifi设备查找 ==
+Presenter -> Model : groupId deviceId
+Model -> TuyaWifiGroup : homeId productId groupId
+TuyaWifiGroup -> 云端 : homeId productId groupId
+
+autonumber
+== 标准zigbee设备查找 ==
+Presenter -> Model : groupId productId deviceId
+Model -> 云端 : homeId productId groupId
+
+@enduml

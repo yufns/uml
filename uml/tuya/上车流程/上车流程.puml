@@ -1,0 +1,10 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+participant groupUi组件 order 10
+participant groupUi组件 order 10
+
+
+@enduml
