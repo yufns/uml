@@ -1,42 +1,75 @@
 @startuml
 'https://plantuml.com/sequence-diagram
+skinparam maxMessageSize 20
 
-autonumber
-
-box 群组类型
-participant Presenter order 10 #88dddd
+box 群组
+participant Presenter order 100 #88dddd
 end box
 
-box groupUseCase #66b2ff
-participant Model order 20 #88dddd
+box UseCase #66b2ff
+participant Model order 200 #88dddd
+participant MeshGroupDeviceListModel order 210 #88dddd
 end box
 
 box homelib #ffb366
-participant TuyaHome order 30 #88dddd
-participant HomeKitModel order 31 #88dddd
-participant TuyaHomeDataManager order 32 #88dddd
-participant TuyaHomeRelationCacheManager order 33 #88dddd
+participant TuyaHome order 300 #88dddd
+participant HomeKitModel order 310 #88dddd
+participant TuyaHomeDataManager order 320 #88dddd
+participant TuyaHomeRelationCacheManager order 330 #88dddd
 end box
 
 
 box device #8c66ff
-participant GroupModel order 40 #88dddd
-participant TuyaWifiGroup order 41 #88dddd
+participant TuyaGroupManager order 400 #88dddd
+
+participant GroupModel order 410 #88dddd
+participant TuyaWifiGroup order 411 #88dddd
+
+
+
+participant TuyaBeaconGroup order 420 #88dddd
+
+participant TuyaZigbeeGroup order 431 #88dddd
+participant TuyaZigbeeGroupMonitorManager order 432 #88dddd
+participant ITuyaDevicePlugin order 433 #88dddd
+participant DevModel order 434 #88dddd
+participant DevControlModel order 435 #88dddd
+participant DevCloudControlImpl order 436 #88dddd
+participant MqttControlModel order 437 #88dddd
+
+
 end box
 
-box device #0000ff
-participant 云端 order 1000 #88dddd
+box 蓝牙 #33cccc
+participant TuyaSigMeshLocalGroup order 500 #88dddd
+participant TuyaBlueMeshLocalGroup order 510 #88dddd
+end box
+
+box mqtt #0000ff
+participant MqttServerManager order 9000 #88dddd
+end box
+
+box 云端 #0000ff
+participant 云端 order 10000 #88dddd
 end box
 
 
 
-skinparam maxMessageSize 20
+autonumber
 == 普通wifi群组设备查找 ==
 Presenter -> Model : groupId productId deviceId
 Model -> TuyaHome : groupId productId
 TuyaHome -> HomeKitModel : groupId productId
 HomeKitModel -> GroupModel : groupId productId homeId
 GroupModel -> 云端 : groupId productId homeId
+
+
+autonumber
+== 普通wifi群组创建 ==
+Model -> TuyaHome : productId deviceList groupName
+TuyaHome -> HomeKitModel : productId groupName deviceList
+HomeKitModel -> GroupModel : productId groupName deviceList homeId
+GroupModel -> 云端 : productId groupName deviceList homeId
 
 
 autonumber
@@ -47,14 +80,64 @@ TuyaHome -> HomeKitModel : groupId productId
 HomeKitModel -> GroupModel : groupId productId homeId
 GroupModel -> 云端 : groupId productId homeId
 
+
+autonumber
+== 普通zigbee群组创建 ==
+Model -> TuyaHome : meshId productId groupName
+TuyaHome -> HomeKitModel : meshId productId groupName type
+note over of HomeKitModel : 新增type
+
+HomeKitModel -> GroupModel : meshId productId groupName type homeId
+note over of GroupModel : 新增homeId
+
+GroupModel -> 云端 : meshId productId groupName type homeId
+|||
+note over of 云端 : 省略中间传递
+云端 --> Model : groupId localId
+Model -> TuyaZigbeeGroup : groupId
+TuyaZigbeeGroup -> TuyaZigbeeGroupMonitorManager : meshId deviceList localId actionId
+TuyaZigbeeGroupMonitorManager -> TuyaZigbeeGroupMonitorManager : deviceList 转 cids
+TuyaZigbeeGroupMonitorManager -> DevModel : cids localId
+DevModel -> DevControlModel : cids localId
+DevControlModel -> DevCloudControlImpl : cids localId meshId sandO
+note over of DevCloudControlImpl : meshId sandO
+DevCloudControlImpl -> MqttControlModel : topicId pv localKey action gid cieds sandO sandR
+MqttControlModel -> MqttServerManager : topicId pv localKey action gid cieds sandO sandR
+MqttServerManager --> TuyaZigbeeGroupMonitorManager : 203号协议
+|||
+TuyaZigbeeGroupMonitorManager --> Model
+
 autonumber
 == Beacon设备查找 ==
 Presenter -> Model : groupId productId deviceId
-Model -> TuyaHomeDataManager : 空
+Model -> TuyaHomeDataManager : null
 Model -> TuyaHomeRelationCacheManager : homeId
 TuyaHomeRelationCacheManager --> TuyaHomeDataManager : deviceList
 TuyaHomeDataManager --> Model : deviceList
+Model -> Model : 获取当前设备category,用于过滤
 Model -> Model : 过滤
+
+== Beacon创建群组 ==
+Presenter -> Model : groupId productId deviceId
+Model -> TuyaHome : groupId productId deviceId homeId
+TuyaHome -> HomeKitModel : null
+HomeKitModel -> GroupModel : null
+GroupModel -> 云端 : null
+云端 --> Model : 生成groupId
+Model -> Model : 创建TuyaGroupManager
+Model -> MeshGroupDeviceListModel : TuyaGroupManager addList removeList groupId
+MeshGroupDeviceListModel -> TuyaGroupManager : groupId
+TuyaGroupManager -> TuyaBeaconGroup : groupId deviceId
+alt 通过网关 : 网关和子设备均云端在线
+TuyaBeaconGroup -> TuyaBeaconGroup : 生成DevModel
+TuyaBeaconGroup -> DevModel : deviceId groupId
+DevModel -> DevControlModel : deviceId groupId cids
+DevControlModel -> DevCloudControlImpl : deviceId  groupId cids sandR
+else 本地添加
+
+end
+
+
 
 autonumber
 == 普通Mesh 普通SigMesh设备查找 ==
@@ -74,6 +157,8 @@ Model -> TuyaWifiGroup : homeId productId groupId
 TuyaWifiGroup -> 云端 : homeId productId groupId
 
 
+
+
 autonumber
 == 标准wifi设备查找 ==
 Presenter -> Model : groupId deviceId
@@ -84,5 +169,28 @@ autonumber
 == 标准zigbee设备查找 ==
 Presenter -> Model : groupId productId deviceId
 Model -> 云端 : homeId productId groupId
+
+autonumber
+== zigbee遥控器设备查找 ==
+Presenter -> Model : deviceId localId categoryCode codes
+Model -> 云端 : deviceId categoryCode codes meshId type:zigbee或者sigmesh homeId
+
+autonumber
+== mesh遥控器设备查找 ==
+Presenter -> Model : deviceId localId categoryCode codes vendorId meshId pcc type
+alt 走本地
+    alt meshId不为null
+        Model -> TuyaSigMeshLocalGroup : localId meshId vendorId
+        TuyaSigMeshLocalGroup -> Model : deviceList
+    else
+        Model -> TuyaBlueMeshLocalGroup : localId meshId vendorId
+        TuyaBlueMeshLocalGroup -> Model : deviceList
+    end
+Model -> Model : 过滤
+
+else 走云端
+Model -> 云端 : deviceId categoryCode codes meshId type:zigbee或者sigmesh homeId
+
+end
 
 @enduml

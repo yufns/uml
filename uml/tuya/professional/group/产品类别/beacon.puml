@@ -1,0 +1,86 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+skinparam maxMessageSize 20
+
+box 群组
+participant Presenter order 100 #88dddd
+end box
+
+box UseCase #66b2ff
+participant Model order 200 #88dddd
+participant MeshGroupDeviceListModel order 210 #88dddd
+end box
+
+box homelib #ffb366
+participant TuyaHome order 300 #88dddd
+participant HomeKitModel order 310 #88dddd
+participant TuyaHomeDataManager order 320 #88dddd
+participant TuyaHomeRelationCacheManager order 330 #88dddd
+end box
+
+
+box device #8c66ff
+participant TuyaGroupManager order 400 #88dddd
+participant GroupModel order 410 #88dddd
+participant TuyaBeaconGroup order 420 #88dddd
+participant TuyaZigbeeGroupMonitorManager order 432 #88dddd
+participant DevModel order 434 #88dddd
+participant DevControlModel order 435 #88dddd
+participant DevCloudControlImpl order 436 #88dddd
+participant MqttControlModel order 437 #88dddd
+end box
+
+box bluetooth #0867cf
+participant TuyaBeaconManager order 500 #88dddd
+end box
+
+
+box mqtt #0000ff
+participant MqttServerManager order 9000 #88dddd
+end box
+
+box 云端 #0000ff
+participant 云端 order 10000 #88dddd
+end box
+
+
+autonumber
+== Beacon设备查找 byDevice ==
+Presenter -> Model : groupId productId deviceId
+Model -> TuyaHomeDataManager : null
+Model -> TuyaHomeRelationCacheManager : homeId
+TuyaHomeRelationCacheManager --> TuyaHomeDataManager : deviceList
+TuyaHomeDataManager --> Model : deviceList
+Model -> Model : 获取当前设备category,用于过滤
+Model -> Model : 过滤
+
+
+== Beacon创建群组 ==
+Presenter -> Model : groupId productId deviceId
+Model -> TuyaHome : groupId productId deviceId homeId
+TuyaHome -> HomeKitModel : null
+HomeKitModel -> GroupModel : null
+GroupModel -> 云端 : null
+云端 --> Model : 生成groupId
+Model -> Model : 创建TuyaGroupManager
+Model -> MeshGroupDeviceListModel : TuyaGroupManager addList removeList groupId
+MeshGroupDeviceListModel -> TuyaGroupManager : groupId
+TuyaGroupManager -> TuyaBeaconGroup : groupId deviceId
+alt 通过网关 : 网关和子设备均云端在线 如果云端操作失败则走本地添加
+TuyaBeaconGroup -> TuyaBeaconGroup : 生成DevModel
+TuyaBeaconGroup -> DevModel : deviceId groupId
+DevModel -> DevControlModel : deviceId groupId cids
+DevControlModel -> DevCloudControlImpl : deviceId  groupId cids sandR
+DevCloudControlImpl -> MqttControlModel : deviceId  groupId cids sandR pv localKey
+MqttControlModel -> MqttServerManager : 发送mqtt添加子设备
+MqttServerManager --> TuyaBeaconGroup : 203协议消息
+TuyaBeaconGroup -> TuyaBeaconGroup : onResult
+else 本地添加
+TuyaBeaconGroup -> TuyaBeaconManager
+TuyaGroupManager --> TuyaBeaconGroup :
+end
+
+== Beacon设备查找 byGroup ==
+
+@enduml

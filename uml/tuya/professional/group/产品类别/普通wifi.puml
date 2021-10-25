@@ -1,0 +1,51 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+skinparam maxMessageSize 20
+
+box 群组
+participant Presenter order 100 #88dddd
+end box
+
+box UseCase #66b2ff
+participant Model order 200 #88dddd
+end box
+
+box homelib #ffb366
+participant TuyaHome order 300 #88dddd
+participant HomeKitModel order 310 #88dddd
+participant TuyaHomeDataManager order 320 #88dddd
+end box
+
+
+box device #8c66ff
+participant GroupModel order 410 #88dddd
+participant TuyaWifiGroup order 411 #88dddd
+end box
+
+
+box 云端 #0000ff
+participant 云端 order 10000 #88dddd
+end box
+
+
+
+autonumber
+== 普通wifi群组设备查找 ==
+Presenter -> Model : groupId productId deviceId
+Model -> TuyaHome : groupId productId
+TuyaHome -> HomeKitModel : groupId productId
+HomeKitModel -> GroupModel : groupId productId homeId
+GroupModel -> 云端 : groupId productId homeId
+
+
+autonumber
+== 普通wifi群组创建 ==
+Model -> TuyaHome : productId deviceList groupName
+TuyaHome -> HomeKitModel : productId groupName deviceList
+HomeKitModel -> GroupModel : productId groupName deviceList homeId
+GroupModel -> 云端 : productId groupName deviceList homeId
+
+@enduml
